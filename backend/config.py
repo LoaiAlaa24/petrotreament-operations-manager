@@ -4,16 +4,16 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    # Database
-    database_url: str = "sqlite:///./station_ops.db"
+    # Database - Railway sets DATABASE_URL automatically
+    database_url: str = os.getenv("DATABASE_URL", "sqlite:///./station_ops.db")
     
-    # Security
-    secret_key: str = "your-secret-key-change-this"
+    # Security - Use environment variable in production
+    secret_key: str = os.getenv("SECRET_KEY", "your-secret-key-change-this")
     jwt_algorithm: str = "HS256"
     jwt_expire_minutes: int = 30
     
     # CORS - simple string that we'll split
-    cors_origins_str: str = "http://localhost:3000,http://127.0.0.1:3000"
+    cors_origins_str: str = os.getenv("CORS_ORIGINS_STR", "http://localhost:3000,http://127.0.0.1:3000")
     
     # API
     api_v1_str: str = "/api/v1"

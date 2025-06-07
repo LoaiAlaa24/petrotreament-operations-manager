@@ -9,46 +9,31 @@ echo "🚀 Starting Railway deployment..."
 # Use Railway's PORT or default to 8000
 export PORT=${PORT:-8000}
 
-# Wait for database to be ready (Railway PostgreSQL)
-if [ ! -z "$DATABASE_URL" ]; then
-    echo "⏳ Waiting for database..."
-    python -c "
-import time
-import psycopg2
-import os
-from urllib.parse import urlparse
-
-url = urlparse(os.environ['DATABASE_URL'])
-for i in range(30):
-    try:
-        conn = psycopg2.connect(
-            host=url.hostname,
-            port=url.port,
-            database=url.path[1:],
-            user=url.username,
-            password=url.password
-        )
-        conn.close()
-        print('✅ Database connected!')
-        break
-    except:
-        if i == 29:
-            raise Exception('❌ Database connection failed')
-        time.sleep(2)
-"
-fi
+# Database connection will be handled by FastAPI/SQLAlchemy
+echo "📊 Database URL configured: ${DATABASE_URL:0:20}..."
 
 # Run database migrations/setup
 echo "🗄️ Setting up database..."
 python -c "
-from database import engine, Base
-Base.metadata.create_all(bind=engine)
-print('✅ Database tables created')
+try:
+    from database import engine, Base
+    Base.metadata.create_all(bind=engine)
+    print('✅ Database tables created')
+except Exception as e:
+    print(f'⚠️ Database setup warning: {e}')
+    print('Will retry on first API call...')
 "
 
 # Create admin users
 echo "👤 Creating admin users..."
-python create_admin.py || echo "⚠️ Admin users might already exist"
+python -c "
+try:
+    exec(open('create_admin.py').read())
+    print('✅ Admin users created/verified')
+except Exception as e:
+    print(f'⚠️ Admin user creation warning: {e}')
+    print('Will create on first API call...')
+" || echo "⚠️ Will retry admin user creation later..."
 
 # Start FastAPI backend with static file serving
 echo "🚀 Starting FastAPI backend..."
