@@ -1,0 +1,139 @@
+/* RTL (Right-to-Left) styles for Arabic language support */
+
+/* Sidebar positioning for RTL */
+[dir="rtl"] .md\:pl-64 {
+  padding-left: 0;
+  padding-right: 16rem;
+}
+
+[dir="rtl"] .hidden.md\:flex.md\:w-64.md\:flex-col.md\:fixed.md\:inset-y-0 {
+  left: auto;
+  right: 0;
+}
+
+/* Border adjustments for specific components */
+[dir="rtl"] .border-r.border-gray-200 {
+  border-right: none;
+  border-left: 1px solid #e5e7eb;
+}
+
+[dir="rtl"] .border-l-4.border-primary-400 {
+  border-left: none;
+  border-right: 4px solid #60a5fa;
+}
+
+[dir="rtl"] .border-l-4.border-green-400 {
+  border-left: none;
+  border-right: 4px solid #4ade80;
+}
+
+/* Form and input specific RTL adjustments */
+[dir="rtl"] input[type="text"],
+[dir="rtl"] input[type="email"],
+[dir="rtl"] input[type="password"],
+[dir="rtl"] select,
+[dir="rtl"] textarea {
+  text-align: right;
+}
+
+[dir="rtl"] input[type="date"],
+[dir="rtl"] input[type="time"],
+[dir="rtl"] input[type="number"] {
+  text-align: left; /* Keep numeric inputs left-aligned */
+}
+
+/* Specific margin and padding fixes for key components */
+[dir="rtl"] .space-x-2 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-x-reverse: 1;
+}
+
+[dir="rtl"] .space-x-3 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-x-reverse: 1;
+}
+
+[dir="rtl"] .space-x-4 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-x-reverse: 1;
+}
+
+[dir="rtl"] .space-x-6 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-x-reverse: 1;
+}
+
+[dir="rtl"] .space-x-8 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-x-reverse: 1;
+}
+
+/* Button and icon spacing */
+[dir="rtl"] .inline-flex.items-center svg {
+  margin-left: 0.5rem;
+  margin-right: 0;
+}
+
+[dir="rtl"] .inline-flex.items-center svg + span,
+[dir="rtl"] .inline-flex.items-center svg + * {
+  margin-left: 0;
+  margin-right: 0.5rem;
+}
+
+/* Table specific RTL */
+[dir="rtl"] table {
+  direction: rtl;
+}
+
+[dir="rtl"] th,
+[dir="rtl"] td {
+  text-align: right;
+}
+
+[dir="rtl"] th:first-child,
+[dir="rtl"] td:first-child {
+  text-align: right;
+}
+
+[dir="rtl"] th:last-child,
+[dir="rtl"] td:last-child {
+  text-align: left; /* Actions column stays left */
+}
+
+/* Grid and flex adjustments */
+[dir="rtl"] .justify-between {
+  direction: rtl;
+}
+
+[dir="rtl"] .flex.items-center.justify-between {
+  flex-direction: row;
+}
+
+/* Mobile sidebar for RTL */
+[dir="rtl"] .fixed.inset-0.flex.z-40.md\:hidden .relative.flex-1.flex.flex-col.max-w-xs.w-full.bg-white {
+  transform: translateX(100%);
+}
+
+[dir="rtl"] .fixed.inset-0.flex.z-40.md\:hidden .relative.flex-1.flex.flex-col.max-w-xs.w-full.bg-white.translate-x-0 {
+  transform: translateX(0);
+}
+
+/* Dropdown and modal positioning */
+[dir="rtl"] .absolute.right-0 {
+  right: auto;
+  left: 0;
+}
+
+[dir="rtl"] .absolute.left-0 {
+  left: auto;
+  right: 0;
+}
+
+/* Language switcher specific styling */
+[dir="rtl"] .language-switcher {
+  direction: ltr; /* Keep language switcher LTR for consistency */
+}
+
+/* Card and content alignment */
+[dir="rtl"] .text-left {
+  text-align: right;
+}
+
+[dir="rtl"] .text-right {
+  text-align: left;
+}
