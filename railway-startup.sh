@@ -1,20 +1,13 @@
 #!/bin/bash
 
-# Railway startup script for combined frontend + backend
+# Railway startup script for FastAPI with static frontend serving
 
 set -e
 
 echo "🚀 Starting Railway deployment..."
 
-# Use Railway's PORT or default to 8080
-PORT=${PORT:-8080}
-
-# Update nginx to use Railway's PORT
-sed -i "s/listen 8080;/listen $PORT;/" /etc/nginx/sites-available/default
-
-# Start nginx in background
-echo "📡 Starting Nginx..."
-nginx -g 'daemon on; master_process on;'
+# Use Railway's PORT or default to 8000
+export PORT=${PORT:-8000}
 
 # Wait for database to be ready (Railway PostgreSQL)
 if [ ! -z "$DATABASE_URL" ]; then
@@ -57,6 +50,6 @@ print('✅ Database tables created')
 echo "👤 Creating admin users..."
 python create_admin.py || echo "⚠️ Admin users might already exist"
 
-# Start FastAPI backend
+# Start FastAPI backend with static file serving
 echo "🚀 Starting FastAPI backend..."
-exec uvicorn main:app --host 0.0.0.0 --port 8000 --workers 1
+exec uvicorn main:app --host 0.0.0.0 --port $PORT --workers 1
