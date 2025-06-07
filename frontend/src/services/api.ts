@@ -17,7 +17,7 @@ import {
 } from '../types';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
-const API_V1_STR = '/api/v1';
+const API_V1_STR = process.env.REACT_APP_API_URL?.includes('/api/v1') ? '' : '/api/v1';
 
 class ApiService {
   private api: AxiosInstance;
