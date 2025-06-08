@@ -173,6 +173,13 @@ const Dashboard: React.FC = () => {
     return waterTypeMap[waterType] || waterType;
   };
 
+  // Translate day name to current language
+  const translateDayName = (dayName: string) => {
+    // Get the translated day name
+    const translatedDay = t(`days.${dayName}`, { defaultValue: dayName });
+    return translatedDay;
+  };
+
 
   if (error) {
     return (
@@ -337,7 +344,7 @@ const Dashboard: React.FC = () => {
                 </div>
                 <div>
                   <span className="font-medium text-gray-500">{t('table.day')}:</span>
-                  <p className="text-gray-900">{viewingReception.day_of_week}</p>
+                  <p className="text-gray-900">{translateDayName(viewingReception.day_of_week)}</p>
                 </div>
                 <div>
                   <span className="font-medium text-gray-500">{t('table.company')}:</span>

@@ -96,6 +96,13 @@ export const VehicleReceptionTable: React.FC<VehicleReceptionTableProps> = ({
     return waterTypeMap[waterType] || waterType;
   };
 
+  // Translate day name to current language
+  const translateDayName = (dayName: string) => {
+    // Get the translated day name
+    const translatedDay = t(`days.${dayName}`, { defaultValue: dayName });
+    return translatedDay;
+  };
+
   const handleSort = (column: string) => {
     const currentOrder = filters.sort_by === column && filters.sort_order === 'asc' ? 'desc' : 'asc';
     onSortChange(column, currentOrder);
@@ -330,7 +337,7 @@ export const VehicleReceptionTable: React.FC<VehicleReceptionTableProps> = ({
                   {formatDate(reception.date)}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {reception.day_of_week}
+                  {translateDayName(reception.day_of_week)}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                   {reception.company_name}
