@@ -6,8 +6,6 @@ RUN apt-get update && apt-get install -y \
     gcc \
     libpq-dev \
     curl \
-    fonts-dejavu-core \
-    fonts-liberation \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Node.js for building frontend
