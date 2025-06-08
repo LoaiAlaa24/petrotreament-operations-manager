@@ -36,7 +36,14 @@ COPY backend/ ./
 RUN mkdir -p data static
 
 # Copy built frontend to static directory
-RUN cp -r frontend/build/* static/ || echo "Frontend build not found"
+RUN if [ -d "frontend/build" ]; then \
+        cp -r frontend/build/* static/ && \
+        echo "✅ Frontend build copied to static/"; \
+        ls -la static/; \
+        ls -la static/static/ || echo "No static subdirectory"; \
+    else \
+        echo "❌ Frontend build not found"; \
+    fi
 
 # Copy startup script
 COPY railway-startup.sh ./startup.sh
