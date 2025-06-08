@@ -6,6 +6,9 @@ const LanguageSwitcher: React.FC = () => {
   const { i18n } = useTranslation();
 
   const changeLanguage = (lng: string) => {
+    // Save to localStorage explicitly
+    localStorage.setItem('i18nextLng', lng);
+    
     i18n.changeLanguage(lng);
     // Update document direction for RTL support
     const isRTL = lng === 'ar';
