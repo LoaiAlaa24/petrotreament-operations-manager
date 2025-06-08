@@ -286,9 +286,9 @@ const Dashboard: React.FC = () => {
 
       {/* Quick Actions */}
       <div className="bg-white shadow rounded-lg p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-medium text-gray-900">{t('dashboard.quickActions')}</h3>
-          <div className={`flex items-center ${isRTL ? 'space-x-reverse space-x-3' : 'space-x-3'}`}>
+        <div className={`flex items-center justify-between mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
+          <h3 className={`text-lg font-medium text-gray-900 ${isRTL ? 'text-right' : 'text-left'}`}>{t('dashboard.quickActions')}</h3>
+          <div className={`flex items-center gap-3 ${isRTL ? 'flex-row-reverse' : ''}`}>
             <button
               onClick={() => setShowForm(true)}
               className="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"

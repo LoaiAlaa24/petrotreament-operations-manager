@@ -66,7 +66,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           
           <div className="flex-1 h-0 pt-5 pb-4 overflow-y-auto">
             <div className="flex-shrink-0 flex items-center px-4">
-              <img src="/logo-petro.png" alt="P.P.E.S." className={`h-16 w-10 ${isRTL ? 'ml-3' : 'mr-3'}`} />
+              <img src="/logo-petro.png" alt="P.P.E.S." className={`h-16 w-12 ${isRTL ? 'ml-3' : 'mr-3'}`} />
               <div>
                 <h1 className="text-lg font-bold text-gray-900">{t('nav.companyName')}</h1>
                 <p className="text-xs text-gray-600">{t('nav.appTitle')}</p>
