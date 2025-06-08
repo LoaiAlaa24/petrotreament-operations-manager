@@ -19,6 +19,56 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfbase import pdfmetrics
 import os
 
+# Register Unicode-supporting font
+def register_unicode_font():
+    """Register a Unicode font for proper text rendering"""
+    try:
+        # Try to register DejaVu Sans which supports Arabic and special characters
+        font_path = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
+        if os.path.exists(font_path):
+            pdfmetrics.registerFont(TTFont('DejaVuSans', font_path))
+            pdfmetrics.registerFont(TTFont('DejaVuSans-Bold', "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"))
+            return 'DejaVuSans'
+    except:
+        pass
+    
+    try:
+        # Fallback to Arial Unicode if available
+        font_path = "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf"
+        if os.path.exists(font_path):
+            pdfmetrics.registerFont(TTFont('LiberationSans', font_path))
+            pdfmetrics.registerFont(TTFont('LiberationSans-Bold', "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf"))
+            return 'LiberationSans'
+    except:
+        pass
+    
+    # Default to Helvetica if no Unicode font available
+    return 'Helvetica'
+
+# Get the best available font
+UNICODE_FONT = register_unicode_font()
+UNICODE_FONT_BOLD = f'{UNICODE_FONT}-Bold' if UNICODE_FONT != 'Helvetica' else 'Helvetica-Bold'
+
+def clean_text_for_pdf(text: str) -> str:
+    """Clean text for PDF rendering to avoid font issues"""
+    if not text:
+        return ""
+    
+    # Handle None values
+    if text is None:
+        return ""
+    
+    # Convert to string and strip
+    text = str(text).strip()
+    
+    # Replace problematic characters that might not render properly
+    text = text.replace('\x00', '')  # Remove null bytes
+    text = text.replace('\r\n', ' ')  # Replace line breaks
+    text = text.replace('\n', ' ')    # Replace newlines
+    text = text.replace('\r', ' ')    # Replace carriage returns
+    
+    return text
+
 router = APIRouter()
 
 
@@ -79,7 +129,7 @@ def generate_financial_pdf_report(financial_data: dict) -> bytes:
         ('BACKGROUND', (0, 0), (-1, -1), colors.lightgrey),
         ('TEXTCOLOR', (0, 0), (-1, -1), colors.black),
         ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
-        ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
+        ('FONTNAME', (0, 0), (-1, -1), UNICODE_FONT),
         ('FONTSIZE', (0, 0), (-1, -1), 10),
         ('BOTTOMPADDING', (0, 0), (-1, -1), 12),
         ('GRID', (0, 0), (-1, -1), 1, colors.black)
@@ -101,7 +151,7 @@ def generate_financial_pdf_report(financial_data: dict) -> bytes:
         
         for company_data in financial_data['companies']:
             row = [
-                company_data['company_name'],
+                clean_text_for_pdf(company_data['company_name']),
                 f"{company_data['total_volume_m3']:.2f}",
                 f"${company_data['rate_per_m3']:.2f}",
                 f"${company_data['total_cost']:,.2f}",
@@ -125,21 +175,21 @@ def generate_financial_pdf_report(financial_data: dict) -> bytes:
             ('BACKGROUND', (0, 0), (-1, 0), colors.darkblue),
             ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
             ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTNAME', (0, 0), (-1, 0), UNICODE_FONT_BOLD),
             ('FONTSIZE', (0, 0), (-1, 0), 10),
             ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
             
             # Data rows styling
             ('BACKGROUND', (0, 1), (-1, -2), colors.beige),
             ('TEXTCOLOR', (0, 1), (-1, -1), colors.black),
-            ('FONTNAME', (0, 1), (-1, -2), 'Helvetica'),
+            ('FONTNAME', (0, 1), (-1, -2), UNICODE_FONT),
             ('FONTSIZE', (0, 1), (-1, -1), 9),
             ('ALIGN', (0, 1), (-1, -1), 'CENTER'),
             
             # Totals row styling
             ('BACKGROUND', (0, -1), (-1, -1), colors.darkgrey),
             ('TEXTCOLOR', (0, -1), (-1, -1), colors.black),
-            ('FONTNAME', (0, -1), (-1, -1), 'Helvetica-Bold'),
+            ('FONTNAME', (0, -1), (-1, -1), UNICODE_FONT_BOLD),
             ('FONTSIZE', (0, -1), (-1, -1), 10),
             
             # Grid
@@ -219,7 +269,7 @@ def generate_pdf_report(receptions: list, report_info: dict) -> bytes:
         ('BACKGROUND', (0, 0), (-1, -1), colors.lightgrey),
         ('TEXTCOLOR', (0, 0), (-1, -1), colors.black),
         ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
-        ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
+        ('FONTNAME', (0, 0), (-1, -1), UNICODE_FONT),
         ('FONTSIZE', (0, 0), (-1, -1), 10),
         ('BOTTOMPADDING', (0, 0), (-1, -1), 12),
         ('GRID', (0, 0), (-1, -1), 1, colors.black)
@@ -237,9 +287,9 @@ def generate_pdf_report(receptions: list, report_info: dict) -> bytes:
         for reception in receptions:
             row = [
                 reception.date.strftime('%A, %Y-%m-%d'),  # Include day of week in date format
-                reception.company_name,
+                clean_text_for_pdf(reception.company_name),
                 str(reception.number_of_vehicles),
-                reception.water_type,
+                clean_text_for_pdf(reception.water_type),
                 f"{reception.total_quantity:.2f}",
                 reception.arrival_time.strftime('%H:%M') if reception.arrival_time else '-',
                 reception.departure_time.strftime('%H:%M') if reception.departure_time else '-'
@@ -253,14 +303,14 @@ def generate_pdf_report(receptions: list, report_info: dict) -> bytes:
             ('BACKGROUND', (0, 0), (-1, 0), colors.darkblue),
             ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
             ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTNAME', (0, 0), (-1, 0), UNICODE_FONT_BOLD),
             ('FONTSIZE', (0, 0), (-1, 0), 10),
             ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
             
             # Data rows styling
             ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
             ('TEXTCOLOR', (0, 1), (-1, -1), colors.black),
-            ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+            ('FONTNAME', (0, 1), (-1, -1), UNICODE_FONT),
             ('FONTSIZE', (0, 1), (-1, -1), 8),
             ('ALIGN', (0, 1), (-1, -1), 'CENTER'),
             ('GRID', (0, 0), (-1, -1), 1, colors.black)
