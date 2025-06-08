@@ -1,9 +1,10 @@
 {
   "nav": {
-    "dashboard": "Dashboard",
+    "dashboard": "Dashboard", 
     "reports": "Reports",
     "language": "Language",
-    "logout": "Logout"
+    "logout": "Logout",
+    "appName": "Petrotreatment Operation Manager"
   },
   "auth": {
     "login": "Login",

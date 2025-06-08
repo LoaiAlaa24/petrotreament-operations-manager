@@ -45,7 +45,7 @@ const Navigation: React.FC<NavigationProps> = ({ onLogout }) => {
                 className="h-8 w-8"
               />
               <span className={`ml-2 text-xl font-bold text-gray-900 ${isRTL ? 'mr-2 ml-0' : ''}`}>
-                Petrotreatment
+                {t('nav.appName')}
               </span>
             </div>
             <div className={`hidden sm:ml-6 sm:flex sm:space-x-8 ${isRTL ? 'sm:mr-6 sm:ml-0 sm:space-x-reverse' : ''}`}>
