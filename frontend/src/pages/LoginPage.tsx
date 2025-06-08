@@ -130,7 +130,7 @@ const LoginPage: React.FC = () => {
             </button>
           </div>
 
-          <div className="text-center">
+          {/* <div className="text-center">
             <div className="text-sm">
               <p className="text-gray-600">
                 {t('auth.demoCredentials')}
@@ -140,7 +140,7 @@ const LoginPage: React.FC = () => {
                 {t('auth.passwordDemo')} <code className="bg-gray-100 px-1 rounded">admin123</code>
               </p>
             </div>
-          </div>
+          </div> */}
         </form>
       </div>
     </div>

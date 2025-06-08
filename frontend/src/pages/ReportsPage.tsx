@@ -236,13 +236,13 @@ const ReportsPage: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Unified Report Configuration */}
         <div className="lg:col-span-2">
-          <div className="bg-white shadow rounded-lg p-6">
-            <h2 className="text-lg font-medium text-gray-900 mb-4">{t('reports.configuration')}</h2>
+          <div className={`bg-white shadow rounded-lg p-6 ${isRTL ? 'text-right' : 'text-left'}`}>
+            <h2 className={`text-lg font-medium text-gray-900 mb-4 ${isRTL ? 'text-right' : 'text-left'}`}>{t('reports.configuration')}</h2>
             
             {/* Quick Date Ranges */}
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">{t('reports.quickRanges')}</label>
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+              <label className={`block text-sm font-medium text-gray-700 mb-2 ${isRTL ? 'text-right' : 'text-left'}`}>{t('reports.quickRanges')}</label>
+              <div className={`grid grid-cols-2 md:grid-cols-5 gap-2 ${isRTL ? 'text-right' : 'text-left'}`}>
                 {quickRanges.map((range) => (
                   <button
                     key={range.label}
@@ -258,7 +258,7 @@ const ReportsPage: React.FC = () => {
             {/* Custom Date Range */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
               <div>
-                <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="startDate" className={`block text-sm font-medium text-gray-700 mb-1 ${isRTL ? 'text-right' : 'text-left'}`}>
                   {t('reports.startDate')}
                 </label>
                 <input
@@ -273,7 +273,7 @@ const ReportsPage: React.FC = () => {
                 />
               </div>
               <div>
-                <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="endDate" className={`block text-sm font-medium text-gray-700 mb-1 ${isRTL ? 'text-right' : 'text-left'}`}>
                   {t('reports.endDate')}
                 </label>
                 <input
@@ -291,7 +291,7 @@ const ReportsPage: React.FC = () => {
 
             {/* Report Type */}
             <div className="mb-6">
-              <label htmlFor="reportType" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="reportType" className={`block text-sm font-medium text-gray-700 mb-1 ${isRTL ? 'text-right' : 'text-left'}`}>
                 {t('reports.reportType')}
               </label>
               <select
@@ -309,7 +309,7 @@ const ReportsPage: React.FC = () => {
             {/* Filters */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
               <div>
-                <label htmlFor="companyFilter" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="companyFilter" className={`block text-sm font-medium text-gray-700 mb-1 ${isRTL ? 'text-right' : 'text-left'}`}>
                   {t('reports.filterCompany')}
                 </label>
                 <select
@@ -328,7 +328,7 @@ const ReportsPage: React.FC = () => {
                 </select>
               </div>
               <div>
-                <label htmlFor="waterTypeFilter" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="waterTypeFilter" className={`block text-sm font-medium text-gray-700 mb-1 ${isRTL ? 'text-right' : 'text-left'}`}>
                   {t('reports.filterWaterType')}
                 </label>
                 <select
@@ -347,13 +347,13 @@ const ReportsPage: React.FC = () => {
 
 
             {/* Generate Buttons */}
-            <div className="flex justify-end space-x-3">
+            <div className={`flex ${isRTL ? 'justify-start space-x-reverse space-x-3' : 'justify-end space-x-3'}`}>
               <button
                 onClick={handleGenerateReport}
                 disabled={generateReportMutation.isLoading || !reportForm.startDate || !reportForm.endDate}
                 className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <DocumentArrowDownIcon className="-ml-1 mr-2 h-5 w-5" />
+                <DocumentArrowDownIcon className={`h-5 w-5 ${isRTL ? 'ml-2 -mr-1' : '-ml-1 mr-2'}`} />
                 {generateReportMutation.isLoading ? t('reports.generating') : t('reports.generatePDF')}
               </button>
               {/* Financial PDF button - only visible to super admin */}
@@ -363,7 +363,7 @@ const ReportsPage: React.FC = () => {
                   disabled={generateFinancialReportMutation.isLoading || !financialForm.startDate || !financialForm.endDate}
                   className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <DocumentArrowDownIcon className="-ml-1 mr-2 h-5 w-5" />
+                  <DocumentArrowDownIcon className={`h-5 w-5 ${isRTL ? 'ml-2 -mr-1' : '-ml-1 mr-2'}`} />
                   {generateFinancialReportMutation.isLoading ? t('reports.generating') : t('reports.generateFinancialPDF')}
                 </button>
               )}
