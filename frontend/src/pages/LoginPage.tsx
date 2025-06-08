@@ -6,9 +6,10 @@ import { LoginCredentials } from '../types';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 
 const LoginPage: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const { login, error } = useAuth();
+  const isRTL = i18n.language === 'ar';
   
   const {
     register,
@@ -30,7 +31,7 @@ const LoginPage: React.FC = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       {/* Language Switcher */}
-      <div className="absolute top-4 right-4">
+      <div className={`absolute top-4 ${isRTL ? 'left-4' : 'right-4'}`}>
         <LanguageSwitcher />
       </div>
       <div className="max-w-md w-full space-y-8">
@@ -49,7 +50,7 @@ const LoginPage: React.FC = () => {
         <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
           <div className="rounded-md shadow-sm space-y-4">
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="username" className={`block text-sm font-medium text-gray-700 mb-1 ${isRTL ? 'text-right' : 'text-left'}`}>
                 {t('auth.username')}
               </label>
               <input
@@ -67,12 +68,12 @@ const LoginPage: React.FC = () => {
                 placeholder={t('auth.username')}
               />
               {errors.username && (
-                <p className="mt-1 text-sm text-red-600">{errors.username.message}</p>
+                <p className={`mt-1 text-sm text-red-600 ${isRTL ? 'text-right' : 'text-left'}`}>{errors.username.message}</p>
               )}
             </div>
             
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="password" className={`block text-sm font-medium text-gray-700 mb-1 ${isRTL ? 'text-right' : 'text-left'}`}>
                 {t('auth.password')}
               </label>
               <input
@@ -90,19 +91,19 @@ const LoginPage: React.FC = () => {
                 placeholder={t('auth.password')}
               />
               {errors.password && (
-                <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
+                <p className={`mt-1 text-sm text-red-600 ${isRTL ? 'text-right' : 'text-left'}`}>{errors.password.message}</p>
               )}
             </div>
           </div>
 
           {error && (
             <div className="rounded-md bg-red-50 p-4">
-              <div className="flex">
-                <div className="ml-3">
-                  <h3 className="text-sm font-medium text-red-800">
+              <div className={`flex ${isRTL ? 'flex-row-reverse' : ''}`}>
+                <div className={`${isRTL ? 'mr-3' : 'ml-3'}`}>
+                  <h3 className={`text-sm font-medium text-red-800 ${isRTL ? 'text-right' : 'text-left'}`}>
                     {t('auth.loginFailed')}
                   </h3>
-                  <div className="mt-2 text-sm text-red-700">
+                  <div className={`mt-2 text-sm text-red-700 ${isRTL ? 'text-right' : 'text-left'}`}>
                     <p>{error}</p>
                   </div>
                 </div>
