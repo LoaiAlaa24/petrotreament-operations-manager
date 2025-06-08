@@ -4,7 +4,8 @@
     "reports": "Reports",
     "language": "Language",
     "logout": "Logout",
-    "appName": "Petrotreatment Operation Manager"
+    "companyName": "Petrotreatment",
+    "appTitle": "Operation Manager"
   },
   "auth": {
     "login": "Login",

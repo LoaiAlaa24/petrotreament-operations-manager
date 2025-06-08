@@ -44,9 +44,14 @@ const Navigation: React.FC<NavigationProps> = ({ onLogout }) => {
                 alt="P.P.E.S." 
                 className="h-8 w-8"
               />
-              <span className={`ml-2 text-xl font-bold text-gray-900 ${isRTL ? 'mr-2 ml-0' : ''}`}>
-                {t('nav.appName')}
-              </span>
+              <div className={`ml-2 ${isRTL ? 'mr-2 ml-0' : ''}`}>
+                <span className="text-xl font-bold text-gray-900">
+                  {t('nav.companyName')}
+                </span>
+                <span className="block text-sm text-gray-600">
+                  {t('nav.appTitle')}
+                </span>
+              </div>
             </div>
             <div className={`hidden sm:ml-6 sm:flex sm:space-x-8 ${isRTL ? 'sm:mr-6 sm:ml-0 sm:space-x-reverse' : ''}`}>
               {navigation.map((item) => (
