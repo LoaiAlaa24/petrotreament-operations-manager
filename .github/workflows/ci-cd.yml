@@ -282,7 +282,7 @@ jobs:
   #       fi
 
   # Notification
-  notify-deployment:
+  # notify-deployment:
     runs-on: ubuntu-latest
     name: Notify Deployment Status
     needs: [deploy-production]
