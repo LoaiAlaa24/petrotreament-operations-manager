@@ -283,18 +283,18 @@ jobs:
 
   # Notification
   # notify-deployment:
-    runs-on: ubuntu-latest
-    name: Notify Deployment Status
-    needs: [deploy-production]
-    if: always()
+    # runs-on: ubuntu-latest
+    # name: Notify Deployment Status
+    # needs: [deploy-production]
+    # if: always()
     
-    steps:
-    - name: Notify success
-      if: needs.deploy-production.result == 'success'
-      run: |
-        echo "✅ Deployment to production successful!"
+    # steps:
+    # - name: Notify success
+    #   if: needs.deploy-production.result == 'success'
+    #   run: |
+    #     echo "✅ Deployment to production successful!"
         
-    - name: Notify failure
-      if: needs.deploy-production.result == 'failure'
-      run: |
-        echo "❌ Deployment to production failed!"
+    # - name: Notify failure
+    #   if: needs.deploy-production.result == 'failure'
+    #   run: |
+    #     echo "❌ Deployment to production failed!"
