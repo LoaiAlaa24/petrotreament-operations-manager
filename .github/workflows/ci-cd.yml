@@ -179,107 +179,107 @@ jobs:
           echo "⚠️ Security scan file not generated"
         fi
 
-  # Deploy to Railway (Production)
-  deploy-production:
-    runs-on: ubuntu-latest
-    name: Deploy to Production
-    needs: [test-frontend, test-backend, build-docker]
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+  # # Deploy to Railway (Production)
+  # deploy-production:
+  #   runs-on: ubuntu-latest
+  #   name: Deploy to Production
+  #   needs: [test-frontend, test-backend, build-docker]
+  #   if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+  #   steps:
+  #   - name: Checkout code
+  #     uses: actions/checkout@v4
       
-    - name: Install Railway CLI
-      run: |
-        curl -fsSL https://railway.app/install.sh | sh
-        echo "$HOME/.railway/bin" >> $GITHUB_PATH
+  #   - name: Install Railway CLI
+  #     run: |
+  #       curl -fsSL https://railway.app/install.sh | sh
+  #       echo "$HOME/.railway/bin" >> $GITHUB_PATH
         
-    - name: Deploy to Railway
-      env:
-        RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-      run: |
-        if [ -z "$RAILWAY_TOKEN" ]; then
-          echo "❌ RAILWAY_TOKEN secret not set"
-          exit 1
-        fi
-        echo "🚂 Deploying to Railway..."
-        railway up --detach
+  #   - name: Deploy to Railway
+  #     env:
+  #       RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+  #     run: |
+  #       if [ -z "$RAILWAY_TOKEN" ]; then
+  #         echo "❌ RAILWAY_TOKEN secret not set"
+  #         exit 1
+  #       fi
+  #       echo "🚂 Deploying to Railway..."
+  #       railway up --detach
         
-    - name: Wait for deployment
-      run: |
-        echo "⏳ Waiting for deployment to start..."
-        sleep 30
+  #   - name: Wait for deployment
+  #     run: |
+  #       echo "⏳ Waiting for deployment to start..."
+  #       sleep 30
         
-    - name: Health check
-      continue-on-error: true
-      run: |
-        if [ ! -z "${{ secrets.PRODUCTION_URL }}" ]; then
-          echo "🔍 Performing health check at ${{ secrets.PRODUCTION_URL }}/health"
-          for i in {1..5}; do
-            if curl -f ${{ secrets.PRODUCTION_URL }}/health; then
-              echo "✅ Health check passed on attempt $i"
-              exit 0
-            else
-              echo "⏳ Health check failed, attempt $i/5, retrying in 10s..."
-              sleep 10
-            fi
-          done
-          echo "❌ Health check failed after 5 attempts"
-        else
-          echo "⚠️ PRODUCTION_URL secret not set, skipping health check"
-        fi
+  #   - name: Health check
+  #     continue-on-error: true
+  #     run: |
+  #       if [ ! -z "${{ secrets.PRODUCTION_URL }}" ]; then
+  #         echo "🔍 Performing health check at ${{ secrets.PRODUCTION_URL }}/health"
+  #         for i in {1..5}; do
+  #           if curl -f ${{ secrets.PRODUCTION_URL }}/health; then
+  #             echo "✅ Health check passed on attempt $i"
+  #             exit 0
+  #           else
+  #             echo "⏳ Health check failed, attempt $i/5, retrying in 10s..."
+  #             sleep 10
+  #           fi
+  #         done
+  #         echo "❌ Health check failed after 5 attempts"
+  #       else
+  #         echo "⚠️ PRODUCTION_URL secret not set, skipping health check"
+  #       fi
 
-  # Deploy to Staging (Development branch)
-  deploy-staging:
-    runs-on: ubuntu-latest
-    name: Deploy to Staging
-    needs: [test-frontend, test-backend, build-docker]
-    if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
+  # # Deploy to Staging (Development branch)
+  # deploy-staging:
+  #   runs-on: ubuntu-latest
+  #   name: Deploy to Staging
+  #   needs: [test-frontend, test-backend, build-docker]
+  #   if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
     
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+  #   steps:
+  #   - name: Checkout code
+  #     uses: actions/checkout@v4
       
-    - name: Install Railway CLI
-      run: |
-        curl -fsSL https://railway.app/install.sh | sh
-        echo "$HOME/.railway/bin" >> $GITHUB_PATH
+  #   - name: Install Railway CLI
+  #     run: |
+  #       curl -fsSL https://railway.app/install.sh | sh
+  #       echo "$HOME/.railway/bin" >> $GITHUB_PATH
         
-    - name: Deploy to Railway Staging
-      env:
-        RAILWAY_TOKEN: ${{ secrets.RAILWAY_STAGING_TOKEN }}
-      run: |
-        if [ -z "$RAILWAY_TOKEN" ]; then
-          echo "❌ RAILWAY_STAGING_TOKEN secret not set"
-          exit 1
-        fi
-        echo "🚂 Deploying to Railway Staging..."
-        railway up --detach
+  #   - name: Deploy to Railway Staging
+  #     env:
+  #       RAILWAY_TOKEN: ${{ secrets.RAILWAY_STAGING_TOKEN }}
+  #     run: |
+  #       if [ -z "$RAILWAY_TOKEN" ]; then
+  #         echo "❌ RAILWAY_STAGING_TOKEN secret not set"
+  #         exit 1
+  #       fi
+  #       echo "🚂 Deploying to Railway Staging..."
+  #       railway up --detach
         
-    - name: Wait for staging deployment
-      run: |
-        echo "⏳ Waiting for staging deployment to start..."
-        sleep 30
+  #   - name: Wait for staging deployment
+  #     run: |
+  #       echo "⏳ Waiting for staging deployment to start..."
+  #       sleep 30
         
-    - name: Health check staging
-      continue-on-error: true
-      run: |
-        if [ ! -z "${{ secrets.STAGING_URL }}" ]; then
-          echo "🔍 Performing staging health check at ${{ secrets.STAGING_URL }}/health"
-          for i in {1..5}; do
-            if curl -f ${{ secrets.STAGING_URL }}/health; then
-              echo "✅ Staging health check passed on attempt $i"
-              exit 0
-            else
-              echo "⏳ Staging health check failed, attempt $i/5, retrying in 10s..."
-              sleep 10
-            fi
-          done
-          echo "❌ Staging health check failed after 5 attempts"
-        else
-          echo "⚠️ STAGING_URL secret not set, skipping staging health check"
-        fi
+  #   - name: Health check staging
+  #     continue-on-error: true
+  #     run: |
+  #       if [ ! -z "${{ secrets.STAGING_URL }}" ]; then
+  #         echo "🔍 Performing staging health check at ${{ secrets.STAGING_URL }}/health"
+  #         for i in {1..5}; do
+  #           if curl -f ${{ secrets.STAGING_URL }}/health; then
+  #             echo "✅ Staging health check passed on attempt $i"
+  #             exit 0
+  #           else
+  #             echo "⏳ Staging health check failed, attempt $i/5, retrying in 10s..."
+  #             sleep 10
+  #           fi
+  #         done
+  #         echo "❌ Staging health check failed after 5 attempts"
+  #       else
+  #         echo "⚠️ STAGING_URL secret not set, skipping staging health check"
+  #       fi
 
   # Notification
   notify-deployment:
