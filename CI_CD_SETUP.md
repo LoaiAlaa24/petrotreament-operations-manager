@@ -71,8 +71,17 @@ STAGING_URL           # Staging application URL for health checks (optional)
 ### Get Railway Token
 1. Install Railway CLI: `curl -fsSL https://railway.app/install.sh | sh`
 2. Login: `railway login`
-3. Get your token: `railway whoami --token`
+3. Create a new token in Railway dashboard:
+   - Go to your Railway dashboard
+   - Navigate to Account Settings → API Tokens
+   - Create a new token with appropriate permissions
 4. Copy the token to GitHub secrets as `RAILWAY_TOKEN`
+
+### Alternative: Project Token
+1. In your Railway project dashboard
+2. Go to Settings → Environment Variables  
+3. Generate a deployment token for the specific project
+4. Use this project-specific token for more secure deployments
 
 ### Production Deployment
 1. Create a new Railway project for production

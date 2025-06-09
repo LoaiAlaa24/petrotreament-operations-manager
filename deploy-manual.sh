@@ -165,12 +165,13 @@ deploy_railway() {
     
     print_status "Deploying to Railway..."
     
-    # Check if logged in to Railway
-    railway whoami > /dev/null 2>&1 || {
-        print_error "You're not logged in to Railway"
-        print_status "Run: railway login"
+    # Check if Railway token is set
+    if [ -z "$RAILWAY_TOKEN" ]; then
+        print_error "RAILWAY_TOKEN environment variable not set"
+        print_status "Set with: export RAILWAY_TOKEN=your_token_here"
+        print_status "Or run: railway login (interactive login)"
         exit 1
-    }
+    fi
     
     # Deploy
     railway up --detach || {
