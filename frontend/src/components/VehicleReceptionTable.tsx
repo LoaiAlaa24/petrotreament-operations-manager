@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { VehicleReception, FilterOptions, User } from '../types';
+import { VehicleReception, FilterOptions } from '../types';
 import { format, parseISO } from 'date-fns';
 import { PencilIcon, TrashIcon, EyeIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '../hooks/useAuth';
@@ -42,7 +42,6 @@ export const VehicleReceptionTable: React.FC<VehicleReceptionTableProps> = ({
   const { user } = useAuth();
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
   const [showDeleteModal, setShowDeleteModal] = useState<number | null>(null);
-  const isRTL = i18n.language === 'ar';
 
   // Check if user can edit/delete a specific reception
   const canEditOrDelete = (reception: VehicleReception): boolean => {

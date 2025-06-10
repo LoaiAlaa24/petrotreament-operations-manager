@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { EnhancedVehicleReceptionCreate, VehicleCreate } from '../types';
+import { EnhancedVehicleReceptionCreate } from '../types';
 import { format } from 'date-fns';
 
 interface EnhancedVehicleReceptionFormProps {
