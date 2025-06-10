@@ -9,8 +9,8 @@ COMPANY_RATES = [
     {"name": "بترونيفرتيتي", "type": "مياه ملوثة", "price_usd": 13},
     
     # Other companies - single rate per company
-    {"name": "MK - يونيكو", "price_egp": 63.5},
-    {"name": "يونيكو - قنطرة", "price_egp": 189.70},
+    {"name": "يونيكو (MK)", "price_egp": 63.5},
+    {"name": "يونيكو (قنطرة)", "price_egp": 189.70},
     {"name": "ابسكو", "price_egp": 1},
     {"name": "عامر جروب (بورتوسعيد)", "price_egp": 117},
     {"name": "نسبكو (شمال سيناء للبترول)", "price_usd": 1},
@@ -21,8 +21,8 @@ COMPANY_RATES = [
 # English company name mappings for the same rates
 ENGLISH_COMPANY_MAPPING = {
     "Petronifertiti": "بترونيفرتيتي",
-    "MK - Unico": "MK - يونيكو",
-    "Unico - Qantara": "يونيكو - قنطرة",
+    "MK - Unico": "يونيكو (MK)",
+    "Unico - Qantara": "يونيكو (قنطرة)",
     "Apsco": "ابسكو",
     "Amer Group (Port Said)": "عامر جروب (بورتوسعيد)",
     "Nesbco (North Sinai Petroleum)": "نسبكو (شمال سيناء للبترول)",
