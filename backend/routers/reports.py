@@ -121,48 +121,57 @@ def create_overlay_pdf(receptions: list, report_info: dict) -> bytes:
     y_position -= 20
     
     if receptions:
-        # Table headers
+        # Table headers - optimized for A4 width
         headers = ['Date', 'Company', 'Vehicles', 'Water Type', 'Quantity (m³)', 'Arrival', 'Departure']
         
-        # Calculate column widths
-        col_widths = [80, 120, 60, 100, 80, 60, 60]
+        # Calculate column widths to fit A4 page (max width ~495 points with margins)
+        col_widths = [70, 105, 45, 85, 65, 50, 50]  # Total: 470 points
         x_positions = [50]
         for width in col_widths[:-1]:
             x_positions.append(x_positions[-1] + width)
         
-        # Draw headers
-        c.setFont(PDF_FONT_BOLD, 10)
-        for i, header in enumerate(headers):
-            c.drawString(x_positions[i], y_position, header)
+        def draw_table_headers(y_pos):
+            """Helper function to draw table headers"""
+            c.setFont(PDF_FONT_BOLD, 9)
+            for i, header in enumerate(headers):
+                c.drawString(x_positions[i], y_pos, header)
+            y_pos -= 12
+            # Draw line under headers
+            c.line(50, y_pos, sum(col_widths) + 50, y_pos)
+            return y_pos - 8
         
-        y_position -= 15
-        
-        # Draw line under headers
-        c.line(50, y_position, sum(col_widths) + 50, y_position)
-        y_position -= 10
+        # Draw initial headers
+        y_position = draw_table_headers(y_position)
         
         # Draw data rows
-        c.setFont(PDF_FONT, 9)
+        c.setFont(PDF_FONT, 8)
         for reception in receptions:
-            if y_position < 100:  # Start new page if near bottom
+            # Check if we need a new page (ensure space for at least 2 rows)
+            if y_position < 120:  # Start new page if near bottom
                 c.showPage()
-                c.setFont(PDF_FONT, 9)
-                y_position = height - 50
+                # Reset to template spacing for new page
+                y_position = height - 200  # Start below template header
+                # Redraw headers on new page
+                y_position = draw_table_headers(y_position)
+                c.setFont(PDF_FONT, 8)
             
             row_data = [
-                reception.date.strftime('%Y-%m-%d'),
-                clean_text_for_pdf(translate_to_english(reception.company_name))[:15],  # Truncate long names
+                reception.date.strftime('%m/%d'),  # Shorter date format
+                clean_text_for_pdf(translate_to_english(reception.company_name))[:12],  # Truncate company names
                 str(reception.number_of_vehicles),
-                clean_text_for_pdf(translate_to_english(reception.water_type))[:12],
-                f"{reception.total_quantity:.2f}",
+                clean_text_for_pdf(translate_to_english(reception.water_type))[:10],  # Truncate water type
+                f"{reception.total_quantity:.1f}",  # One decimal place
                 reception.arrival_time.strftime('%H:%M') if reception.arrival_time else '-',
                 reception.departure_time.strftime('%H:%M') if reception.departure_time else '-'
             ]
             
             for i, data in enumerate(row_data):
-                c.drawString(x_positions[i], y_position, data)
+                # Handle text wrapping for long content
+                if len(str(data)) * 6 > col_widths[i]:  # Rough character width estimate
+                    data = str(data)[:int(col_widths[i]/6)] + "..."
+                c.drawString(x_positions[i], y_position, str(data))
             
-            y_position -= 15
+            y_position -= 12  # Reduced row height for more content per page
     else:
         c.drawString(50, y_position, "No records found for the specified period.")
     
@@ -206,60 +215,73 @@ def create_financial_overlay_pdf(financial_data: dict) -> bytes:
     y_position -= 20
     
     if financial_data['companies']:
-        # Table headers
+        # Table headers - optimized for A4 width
         headers = ['Company Name', 'Volume (m³)', 'Rate per m³', 'Total Cost', 'Receptions']
         
-        # Calculate column widths
-        col_widths = [140, 80, 80, 100, 80]
+        # Calculate column widths to fit A4 page (max width ~495 points with margins)
+        col_widths = [130, 75, 75, 95, 70]  # Total: 445 points
         x_positions = [50]
         for width in col_widths[:-1]:
             x_positions.append(x_positions[-1] + width)
         
-        # Draw headers
-        c.setFont(PDF_FONT_BOLD, 10)
-        for i, header in enumerate(headers):
-            c.drawString(x_positions[i], y_position, header)
+        def draw_financial_headers(y_pos):
+            """Helper function to draw financial table headers"""
+            c.setFont(PDF_FONT_BOLD, 9)
+            for i, header in enumerate(headers):
+                c.drawString(x_positions[i], y_pos, header)
+            y_pos -= 12
+            # Draw line under headers
+            c.line(50, y_pos, sum(col_widths) + 50, y_pos)
+            return y_pos - 8
         
-        y_position -= 15
-        
-        # Draw line under headers
-        c.line(50, y_position, sum(col_widths) + 50, y_position)
-        y_position -= 10
+        # Draw initial headers
+        y_position = draw_financial_headers(y_position)
         
         # Draw data rows
-        c.setFont(PDF_FONT, 9)
+        c.setFont(PDF_FONT, 8)
         for company_data in financial_data['companies']:
-            if y_position < 100:  # Start new page if near bottom
+            # Check if we need a new page (ensure space for at least 2 rows + totals)
+            if y_position < 150:  # Start new page if near bottom
                 c.showPage()
-                c.setFont(PDF_FONT, 9)
-                y_position = height - 50
+                # Reset to template spacing for new page
+                y_position = height - 200  # Start below template header
+                # Redraw headers on new page
+                y_position = draw_financial_headers(y_position)
+                c.setFont(PDF_FONT, 8)
             
             row_data = [
-                clean_text_for_pdf(translate_to_english(company_data['company_name']))[:18],
-                f"{company_data['total_volume_m3']:.2f}",
+                clean_text_for_pdf(translate_to_english(company_data['company_name']))[:16],  # Truncate company names
+                f"{company_data['total_volume_m3']:.1f}",  # One decimal place
                 f"${company_data['rate_per_m3']:.2f}",
-                f"${company_data['total_cost']:,.2f}",
+                f"${company_data['total_cost']:,.0f}",  # No decimal for cost display
                 str(company_data['reception_count'])
             ]
             
             for i, data in enumerate(row_data):
-                c.drawString(x_positions[i], y_position, data)
+                # Handle text wrapping for long content
+                if len(str(data)) * 6 > col_widths[i]:  # Rough character width estimate
+                    data = str(data)[:int(col_widths[i]/6)] + "..."
+                c.drawString(x_positions[i], y_position, str(data))
             
-            y_position -= 15
+            y_position -= 12  # Reduced row height for more content per page
         
-        # Add totals row
-        y_position -= 10
+        # Add totals row with spacing
+        y_position -= 8
         c.setFont(PDF_FONT_BOLD, 9)
+        
+        # Draw separator line before totals
+        c.line(50, y_position + 4, sum(col_widths) + 50, y_position + 4)
+        
         totals_data = [
             'TOTAL',
-            f"{financial_data['total_volume_m3']:.2f}",
+            f"{financial_data['total_volume_m3']:.1f}",
             '-',
-            f"${financial_data['total_cost']:,.2f}",
+            f"${financial_data['total_cost']:,.0f}",
             str(sum(c['reception_count'] for c in financial_data['companies']))
         ]
         
         for i, data in enumerate(totals_data):
-            c.drawString(x_positions[i], y_position, data)
+            c.drawString(x_positions[i], y_position, str(data))
     else:
         c.drawString(50, y_position, "No financial data found for the specified period.")
     
