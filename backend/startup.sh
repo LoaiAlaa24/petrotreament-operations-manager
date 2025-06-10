@@ -20,6 +20,10 @@ done
 
 echo "✅ Database is ready!"
 
+# Run database migrations
+echo "🔄 Running database migrations..."
+python migrate_enhanced_reception.py
+
 # Create admin user if it doesn't exist
 echo "👤 Creating admin user..."
 python create_admin.py

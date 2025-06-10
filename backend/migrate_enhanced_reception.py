@@ -256,6 +256,11 @@ def migrate_enhanced_reception():
         print("   2. Check database connection settings")
         print("   3. Verify user has proper database permissions")
         print("   4. Check if foreign key constraints are supported")
+        
+        # Don't fail startup in production if migration fails on existing schema
+        if "already exists" in str(e).lower() or "duplicate" in str(e).lower():
+            print("⚠️  Migration appears to have already been applied, continuing...")
+            return True
         return False
     
     return True
