@@ -63,11 +63,27 @@ class ApiService {
     pagination: PaginationOptions,
     filters: FilterOptions = {}
   ): Promise<VehicleReceptionList> {
-    const params = {
+    const params: any = {
       page: pagination.page,
       size: pagination.size,
-      ...filters,
+      sort_by: filters.sort_by || 'created_at',
+      sort_order: filters.sort_order || 'desc',
     };
+    
+    // Only add filter parameters if they have valid values
+    if (filters.company_filter && filters.company_filter.trim() !== '') {
+      params.company_filter = filters.company_filter;
+    }
+    if (filters.water_type_filter && filters.water_type_filter.trim() !== '') {
+      params.water_type_filter = filters.water_type_filter;
+    }
+    if (filters.date_from && filters.date_from.trim() !== '') {
+      params.date_from = filters.date_from;
+    }
+    if (filters.date_to && filters.date_to.trim() !== '') {
+      params.date_to = filters.date_to;
+    }
+    
     const response: AxiosResponse<VehicleReceptionList> = await this.api.get(
       '/vehicle-receptions/',
       { params }
@@ -107,8 +123,13 @@ class ApiService {
 
   async getReceptionStats(dateFrom?: string, dateTo?: string): Promise<any> {
     const params: any = {};
-    if (dateFrom) params.date_from = dateFrom;
-    if (dateTo) params.date_to = dateTo;
+    // Only add date parameters if they have valid values
+    if (dateFrom && dateFrom.trim() !== '') {
+      params.date_from = dateFrom;
+    }
+    if (dateTo && dateTo.trim() !== '') {
+      params.date_to = dateTo;
+    }
     
     const response = await this.api.get('/vehicle-receptions/stats/summary', { params });
     return response.data;
@@ -156,8 +177,12 @@ class ApiService {
       start_date: startDate,
       end_date: endDate,
     };
-    if (companyFilter) params.company_filter = companyFilter;
-    if (waterTypeFilter) params.water_type_filter = waterTypeFilter;
+    if (companyFilter && companyFilter.trim() !== '') {
+      params.company_filter = companyFilter;
+    }
+    if (waterTypeFilter && waterTypeFilter.trim() !== '') {
+      params.water_type_filter = waterTypeFilter;
+    }
 
     const response: AxiosResponse<ReportSummary> = await this.api.get('/reports/summary', {
       params,
@@ -182,7 +207,9 @@ class ApiService {
       start_date: startDate,
       end_date: endDate,
     };
-    if (companyFilter) params.company_filter = companyFilter;
+    if (companyFilter && companyFilter.trim() !== '') {
+      params.company_filter = companyFilter;
+    }
 
     const response: AxiosResponse<FinancialReportSummary> = await this.api.get('/reports/financial/summary', {
       params,

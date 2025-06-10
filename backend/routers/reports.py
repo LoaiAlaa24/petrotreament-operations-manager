@@ -17,6 +17,8 @@ from reportlab.lib.units import inch
 from reportlab.pdfbase import pdfutils
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfgen import canvas
+from PyPDF2 import PdfReader, PdfWriter
 import os
 
 # Use standard fonts for English-only reports
@@ -79,262 +81,282 @@ def translate_to_english(text: str) -> str:
     # If no translation found, return original text
     return text
 
+
+def create_overlay_pdf(receptions: list, report_info: dict) -> bytes:
+    """Create an overlay PDF with report content to be merged with template"""
+    
+    buffer = io.BytesIO()
+    # Use A4 size to match typical templates
+    c = canvas.Canvas(buffer, pagesize=A4)
+    width, height = A4
+    
+    # Start from top of page, leaving space for template header
+    y_position = height - 200  # Start below template header
+    
+    # Report title and info
+    c.setFont(PDF_FONT_BOLD, 16)
+    title_text = f"Vehicle Reception Report - {report_info['type'].title()}"
+    c.drawString((width - c.stringWidth(title_text, PDF_FONT_BOLD, 16)) / 2, y_position, title_text)
+    
+    y_position -= 30
+    c.setFont(PDF_FONT, 12)
+    
+    # Report info
+    report_info_text = [
+        f"Report Period: {report_info['start_date'].strftime('%Y-%m-%d')} to {report_info['end_date'].strftime('%Y-%m-%d')}",
+        f"Generated On: {datetime.now().strftime('%Y-%m-%d %H:%M')}",
+        f"Total Records: {len(receptions)}"
+    ]
+    
+    if report_info.get('total_vehicles'):
+        report_info_text.append(f"Total Vehicles: {report_info['total_vehicles']}")
+    
+    if report_info.get('total_quantity'):
+        report_info_text.append(f"Total Quantity: {report_info['total_quantity']:.2f} m³")
+    
+    for info in report_info_text:
+        c.drawString(50, y_position, info)
+        y_position -= 20
+    
+    y_position -= 20
+    
+    if receptions:
+        # Table headers - optimized for A4 width
+        headers = ['Date', 'Company', 'Vehicles', 'Water Type', 'Quantity (m³)', 'Arrival', 'Departure']
+        
+        # Calculate column widths to fit A4 page (max width ~495 points with margins)
+        col_widths = [70, 105, 45, 85, 65, 50, 50]  # Total: 470 points
+        x_positions = [50]
+        for width in col_widths[:-1]:
+            x_positions.append(x_positions[-1] + width)
+        
+        def draw_table_headers(y_pos):
+            """Helper function to draw table headers"""
+            c.setFont(PDF_FONT_BOLD, 9)
+            for i, header in enumerate(headers):
+                c.drawString(x_positions[i], y_pos, header)
+            y_pos -= 12
+            # Draw line under headers
+            c.line(50, y_pos, sum(col_widths) + 50, y_pos)
+            return y_pos - 8
+        
+        # Draw initial headers
+        y_position = draw_table_headers(y_position)
+        
+        # Draw data rows
+        c.setFont(PDF_FONT, 8)
+        for reception in receptions:
+            # Check if we need a new page (ensure space for at least 2 rows)
+            if y_position < 120:  # Start new page if near bottom
+                c.showPage()
+                # Reset to template spacing for new page
+                y_position = height - 200  # Start below template header
+                # Redraw headers on new page
+                y_position = draw_table_headers(y_position)
+                c.setFont(PDF_FONT, 8)
+            
+            row_data = [
+                reception.date.strftime('%m/%d'),  # Shorter date format
+                clean_text_for_pdf(translate_to_english(reception.company_name))[:12],  # Truncate company names
+                str(reception.number_of_vehicles),
+                clean_text_for_pdf(translate_to_english(reception.water_type))[:10],  # Truncate water type
+                f"{reception.total_quantity:.1f}",  # One decimal place
+                reception.arrival_time.strftime('%H:%M') if reception.arrival_time else '-',
+                reception.departure_time.strftime('%H:%M') if reception.departure_time else '-'
+            ]
+            
+            for i, data in enumerate(row_data):
+                # Handle text wrapping for long content
+                if len(str(data)) * 6 > col_widths[i]:  # Rough character width estimate
+                    data = str(data)[:int(col_widths[i]/6)] + "..."
+                c.drawString(x_positions[i], y_position, str(data))
+            
+            y_position -= 12  # Reduced row height for more content per page
+    else:
+        c.drawString(50, y_position, "No records found for the specified period.")
+    
+    c.save()
+    buffer.seek(0)
+    
+    return buffer.getvalue()
+
+
+def create_financial_overlay_pdf(financial_data: dict) -> bytes:
+    """Create an overlay PDF with financial report content"""
+    
+    buffer = io.BytesIO()
+    c = canvas.Canvas(buffer, pagesize=A4)
+    width, height = A4
+    
+    # Start from top of page, leaving space for template header
+    y_position = height - 200
+    
+    # Report title
+    c.setFont(PDF_FONT_BOLD, 16)
+    title_text = "Financial Cost Summary Report"
+    c.drawString((width - c.stringWidth(title_text, PDF_FONT_BOLD, 16)) / 2, y_position, title_text)
+    
+    y_position -= 30
+    c.setFont(PDF_FONT, 12)
+    
+    # Report info
+    report_info_text = [
+        f"Report Period: {financial_data['period_start']} to {financial_data['period_end']}",
+        f"Generated On: {financial_data['generated_at'].strftime('%Y-%m-%d %H:%M:%S')}",
+        f"Total Companies: {len(financial_data['companies'])}",
+        f"Total Volume: {financial_data['total_volume_m3']:.2f} m³",
+        f"Total Cost: ${financial_data['total_cost']:,.2f}"
+    ]
+    
+    for info in report_info_text:
+        c.drawString(50, y_position, info)
+        y_position -= 20
+    
+    y_position -= 20
+    
+    if financial_data['companies']:
+        # Table headers - optimized for A4 width
+        headers = ['Company Name', 'Volume (m³)', 'Rate per m³', 'Total Cost', 'Receptions']
+        
+        # Calculate column widths to fit A4 page (max width ~495 points with margins)
+        col_widths = [130, 75, 75, 95, 70]  # Total: 445 points
+        x_positions = [50]
+        for width in col_widths[:-1]:
+            x_positions.append(x_positions[-1] + width)
+        
+        def draw_financial_headers(y_pos):
+            """Helper function to draw financial table headers"""
+            c.setFont(PDF_FONT_BOLD, 9)
+            for i, header in enumerate(headers):
+                c.drawString(x_positions[i], y_pos, header)
+            y_pos -= 12
+            # Draw line under headers
+            c.line(50, y_pos, sum(col_widths) + 50, y_pos)
+            return y_pos - 8
+        
+        # Draw initial headers
+        y_position = draw_financial_headers(y_position)
+        
+        # Draw data rows
+        c.setFont(PDF_FONT, 8)
+        for company_data in financial_data['companies']:
+            # Check if we need a new page (ensure space for at least 2 rows + totals)
+            if y_position < 150:  # Start new page if near bottom
+                c.showPage()
+                # Reset to template spacing for new page
+                y_position = height - 200  # Start below template header
+                # Redraw headers on new page
+                y_position = draw_financial_headers(y_position)
+                c.setFont(PDF_FONT, 8)
+            
+            row_data = [
+                clean_text_for_pdf(translate_to_english(company_data['company_name']))[:16],  # Truncate company names
+                f"{company_data['total_volume_m3']:.1f}",  # One decimal place
+                f"${company_data['rate_per_m3']:.2f}",
+                f"${company_data['total_cost']:,.0f}",  # No decimal for cost display
+                str(company_data['reception_count'])
+            ]
+            
+            for i, data in enumerate(row_data):
+                # Handle text wrapping for long content
+                if len(str(data)) * 6 > col_widths[i]:  # Rough character width estimate
+                    data = str(data)[:int(col_widths[i]/6)] + "..."
+                c.drawString(x_positions[i], y_position, str(data))
+            
+            y_position -= 12  # Reduced row height for more content per page
+        
+        # Add totals row with spacing
+        y_position -= 8
+        c.setFont(PDF_FONT_BOLD, 9)
+        
+        # Draw separator line before totals
+        c.line(50, y_position + 4, sum(col_widths) + 50, y_position + 4)
+        
+        totals_data = [
+            'TOTAL',
+            f"{financial_data['total_volume_m3']:.1f}",
+            '-',
+            f"${financial_data['total_cost']:,.0f}",
+            str(sum(c['reception_count'] for c in financial_data['companies']))
+        ]
+        
+        for i, data in enumerate(totals_data):
+            c.drawString(x_positions[i], y_position, str(data))
+    else:
+        c.drawString(50, y_position, "No financial data found for the specified period.")
+    
+    c.save()
+    buffer.seek(0)
+    
+    return buffer.getvalue()
+
+
+def merge_with_template(overlay_pdf_bytes: bytes, is_financial: bool = False) -> bytes:
+    """Merge overlay content with the PDF template"""
+    
+    template_path = "/app/template.pdf"
+    
+    # Check if template exists
+    if not os.path.exists(template_path):
+        print(f"⚠️ Template not found at {template_path}, using overlay only")
+        return overlay_pdf_bytes
+    
+    try:
+        # Read the template
+        template_reader = PdfReader(template_path)
+        overlay_reader = PdfReader(io.BytesIO(overlay_pdf_bytes))
+        
+        writer = PdfWriter()
+        
+        # Process each page of the overlay
+        for page_num in range(len(overlay_reader.pages)):
+            # Get template page (use first page for all overlay pages)
+            if len(template_reader.pages) > 0:
+                template_page = template_reader.pages[0]
+                overlay_page = overlay_reader.pages[page_num]
+                
+                # Merge overlay onto template
+                template_page.merge_page(overlay_page)
+                writer.add_page(template_page)
+            else:
+                # If no template, just use overlay
+                writer.add_page(overlay_reader.pages[page_num])
+        
+        # Write the merged PDF
+        output_buffer = io.BytesIO()
+        writer.write(output_buffer)
+        output_buffer.seek(0)
+        
+        print(f"✅ Successfully merged report with template")
+        return output_buffer.getvalue()
+        
+    except Exception as e:
+        print(f"❌ Error merging with template: {str(e)}")
+        print(f"⚠️ Returning overlay PDF without template")
+        return overlay_pdf_bytes
+
+
 router = APIRouter()
 
 
 def generate_financial_pdf_report(financial_data: dict) -> bytes:
-    """Generate financial PDF report from company financial data"""
+    """Generate financial PDF report using template"""
     
-    buffer = io.BytesIO()
-    doc = SimpleDocTemplate(buffer, pagesize=A4)
+    # Create overlay with financial data
+    overlay_pdf_bytes = create_financial_overlay_pdf(financial_data)
     
-    # Get styles
-    styles = getSampleStyleSheet()
-    title_style = ParagraphStyle(
-        'CustomTitle',
-        parent=styles['Heading1'],
-        fontSize=16,
-        spaceAfter=30,
-        alignment=1,  # Center
-    )
-    
-    subtitle_style = ParagraphStyle(
-        'CustomSubtitle',
-        parent=styles['Heading2'],
-        fontSize=14,
-        spaceAfter=20,
-        alignment=1,  # Center
-    )
-    
-    # Build content
-    content = []
-    
-    # Header with logo and title
-    logo_path = "/app/header.jpg"
-    if os.path.exists(logo_path):
-        try:
-            logo = Image(logo_path, width=431, height=117)
-            logo.hAlign = 'CENTER'
-            content.append(logo)
-            content.append(Spacer(1, 12))
-        except:
-            pass  # If logo fails to load, continue without it
-    
-    # Title
-    title = Paragraph("Petrotreatment Operation Manager<br/>Financial Cost Summary Report", title_style)
-    content.append(title)
-    content.append(Spacer(1, 12))
-    
-    # Report info
-    info_data = [
-        ['Report Period:', f"{financial_data['period_start']} to {financial_data['period_end']}"],
-        ['Generated On:', financial_data['generated_at'].strftime('%Y-%m-%d %H:%M:%S')],
-        ['Total Companies:', str(len(financial_data['companies']))],
-        ['Total Volume:', f"{financial_data['total_volume_m3']:.2f} m³"],
-        ['Total Cost:', f"${financial_data['total_cost']:,.2f}"],
-    ]
-    
-    info_table = Table(info_data, colWidths=[2*inch, 3*inch])
-    info_table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, -1), colors.lightgrey),
-        ('TEXTCOLOR', (0, 0), (-1, -1), colors.black),
-        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
-        ('FONTNAME', (0, 0), (-1, -1), PDF_FONT),
-        ('FONTSIZE', (0, 0), (-1, -1), 10),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 12),
-        ('GRID', (0, 0), (-1, -1), 1, colors.black)
-    ]))
-    
-    content.append(info_table)
-    content.append(Spacer(1, 20))
-    
-    # Company financial breakdown
-    if financial_data['companies']:
-        subtitle = Paragraph("Cost Breakdown by Company", subtitle_style)
-        content.append(subtitle)
-        content.append(Spacer(1, 12))
-        
-        # Financial table
-        table_data = [
-            ['Company Name', 'Volume (m³)', 'Rate per m³', 'Total Cost', 'Receptions']
-        ]
-        
-        for company_data in financial_data['companies']:
-            row = [
-                clean_text_for_pdf(translate_to_english(company_data['company_name'])),
-                f"{company_data['total_volume_m3']:.2f}",
-                f"${company_data['rate_per_m3']:.2f}",
-                f"${company_data['total_cost']:,.2f}",
-                str(company_data['reception_count'])
-            ]
-            table_data.append(row)
-        
-        # Add totals row
-        table_data.append([
-            'TOTAL',
-            f"{financial_data['total_volume_m3']:.2f}",
-            '-',
-            f"${financial_data['total_cost']:,.2f}",
-            str(sum(c['reception_count'] for c in financial_data['companies']))
-        ])
-        
-        # Create table
-        financial_table = Table(table_data, repeatRows=1)
-        financial_table.setStyle(TableStyle([
-            # Header row styling
-            ('BACKGROUND', (0, 0), (-1, 0), colors.darkblue),
-            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-            ('FONTNAME', (0, 0), (-1, 0), PDF_FONT_BOLD),
-            ('FONTSIZE', (0, 0), (-1, 0), 10),
-            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-            
-            # Data rows styling
-            ('BACKGROUND', (0, 1), (-1, -2), colors.beige),
-            ('TEXTCOLOR', (0, 1), (-1, -1), colors.black),
-            ('FONTNAME', (0, 1), (-1, -2), PDF_FONT),
-            ('FONTSIZE', (0, 1), (-1, -1), 9),
-            ('ALIGN', (0, 1), (-1, -1), 'CENTER'),
-            
-            # Totals row styling
-            ('BACKGROUND', (0, -1), (-1, -1), colors.darkgrey),
-            ('TEXTCOLOR', (0, -1), (-1, -1), colors.black),
-            ('FONTNAME', (0, -1), (-1, -1), PDF_FONT_BOLD),
-            ('FONTSIZE', (0, -1), (-1, -1), 10),
-            
-            # Grid
-            ('GRID', (0, 0), (-1, -1), 1, colors.black)
-        ]))
-        
-        content.append(financial_table)
-        content.append(Spacer(1, 20))
-        
-        # Add a note about rates
-        note = Paragraph(
-            "<b>Note:</b> Rates per m³ are configured per company. "
-            "Contact system administrator to modify company-specific rates.",
-            styles['Normal']
-        )
-        content.append(note)
-    else:
-        content.append(Paragraph("No financial data found for the specified period.", styles['Normal']))
-    
-    # Build PDF
-    doc.build(content)
-    buffer.seek(0)
-    
-    return buffer.getvalue()
+    # Merge with template
+    return merge_with_template(overlay_pdf_bytes, is_financial=True)
 
 
 def generate_pdf_report(receptions: list, report_info: dict) -> bytes:
-    """Generate PDF report from vehicle reception data"""
+    """Generate PDF report using template"""
     
-    buffer = io.BytesIO()
-    doc = SimpleDocTemplate(buffer, pagesize=A4)
+    # Create overlay with report data
+    overlay_pdf_bytes = create_overlay_pdf(receptions, report_info)
     
-    # Get styles
-    styles = getSampleStyleSheet()
-    title_style = ParagraphStyle(
-        'CustomTitle',
-        parent=styles['Heading1'],
-        fontSize=16,
-        spaceAfter=30,
-        alignment=1,  # Center
-    )
-    
-    # Build content
-    content = []
-    
-    # Header with logo and title
-    logo_path = "/app/header.jpg"
-    if os.path.exists(logo_path):
-        try:
-            logo = Image(logo_path, width=431, height=117)
-            logo.hAlign = 'CENTER'
-            content.append(logo)
-            content.append(Spacer(1, 12))
-        except:
-            pass  # If logo fails to load, continue without it
-    
-    # Title
-    title = Paragraph(f"Petrotreatment Operation Manager<br/>Vehicle Reception Report - {report_info['type'].title()}", title_style)
-    content.append(title)
-    content.append(Spacer(1, 12))
-    
-    # Report info
-    info_data = [
-        ['Report Period:', f"{report_info['start_date'].strftime('%Y-%m-%d')} to {report_info['end_date'].strftime('%Y-%m-%d')}"],
-        ['Generated On:', datetime.now().strftime('%Y-%m-%d %H:%M')],
-        ['Total Records:', str(len(receptions))],
-    ]
-    
-    if report_info.get('total_vehicles'):
-        info_data.append(['Total Vehicles:', str(report_info['total_vehicles'])])
-    
-    if report_info.get('total_quantity'):
-        info_data.append(['Total Quantity:', f"{report_info['total_quantity']:.2f} m³"])
-    
-    info_table = Table(info_data, colWidths=[2*inch, 3*inch])
-    info_table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, -1), colors.lightgrey),
-        ('TEXTCOLOR', (0, 0), (-1, -1), colors.black),
-        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
-        ('FONTNAME', (0, 0), (-1, -1), PDF_FONT),
-        ('FONTSIZE', (0, 0), (-1, -1), 10),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 12),
-        ('GRID', (0, 0), (-1, -1), 1, colors.black)
-    ]))
-    
-    content.append(info_table)
-    content.append(Spacer(1, 20))
-    
-    if receptions:
-        # Data table
-        table_data = [
-            ['Date', 'Company', 'Vehicles', 'Water Type', 'Quantity (m³)', 'Arrival', 'Departure']
-        ]
-        
-        for reception in receptions:
-            row = [
-                reception.date.strftime('%A, %Y-%m-%d'),  # Include day of week in date format
-                clean_text_for_pdf(translate_to_english(reception.company_name)),
-                str(reception.number_of_vehicles),
-                clean_text_for_pdf(translate_to_english(reception.water_type)),
-                f"{reception.total_quantity:.2f}",
-                reception.arrival_time.strftime('%H:%M') if reception.arrival_time else '-',
-                reception.departure_time.strftime('%H:%M') if reception.departure_time else '-'
-            ]
-            table_data.append(row)
-        
-        # Create table
-        data_table = Table(table_data, repeatRows=1)
-        data_table.setStyle(TableStyle([
-            # Header row styling
-            ('BACKGROUND', (0, 0), (-1, 0), colors.darkblue),
-            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-            ('FONTNAME', (0, 0), (-1, 0), PDF_FONT_BOLD),
-            ('FONTSIZE', (0, 0), (-1, 0), 10),
-            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-            
-            # Data rows styling
-            ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
-            ('TEXTCOLOR', (0, 1), (-1, -1), colors.black),
-            ('FONTNAME', (0, 1), (-1, -1), PDF_FONT),
-            ('FONTSIZE', (0, 1), (-1, -1), 8),
-            ('ALIGN', (0, 1), (-1, -1), 'CENTER'),
-            ('GRID', (0, 0), (-1, -1), 1, colors.black)
-        ]))
-        
-        content.append(data_table)
-    else:
-        content.append(Paragraph("No records found for the specified period.", styles['Normal']))
-    
-    # Build PDF
-    doc.build(content)
-    buffer.seek(0)
-    
-    return buffer.getvalue()
+    # Merge with template
+    return merge_with_template(overlay_pdf_bytes, is_financial=False)
 
 
 @router.post("/generate")
