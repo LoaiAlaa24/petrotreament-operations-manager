@@ -52,6 +52,7 @@ class VehicleReceptionBase(BaseModel):
     departure_time: Optional[datetime] = None
     exit_time_drilling: Optional[datetime] = None
     notes: Optional[str] = None
+    invoice_number: Optional[str] = Field(None, max_length=100)
 
 
 class EnhancedVehicleReceptionCreate(VehicleReceptionBase):
@@ -75,6 +76,7 @@ class VehicleReceptionUpdate(BaseModel):
     departure_time: Optional[datetime] = None
     exit_time_drilling: Optional[datetime] = None
     notes: Optional[str] = None
+    invoice_number: Optional[str] = None
 
 
 class VehicleReception(VehicleReceptionBase):
@@ -83,6 +85,7 @@ class VehicleReception(VehicleReceptionBase):
     number_of_vehicles: int  # Calculated from vehicles
     day_of_week: str  # This will be auto-generated from date
     reception_number: Optional[str] = None
+    invoice_number: Optional[str] = None
     created_at: datetime
     updated_at: datetime
     is_active: bool

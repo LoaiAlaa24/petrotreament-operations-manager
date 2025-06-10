@@ -30,6 +30,7 @@ class VehicleReception(Base):
     
     # Reception tracking
     reception_number = Column(String(50), nullable=True, unique=True)  # Auto-generated reception number
+    invoice_number = Column(String(100), nullable=True)  # Optional invoice number from user
     
     # Metadata
     created_at = Column(DateTime, server_default=func.now())
