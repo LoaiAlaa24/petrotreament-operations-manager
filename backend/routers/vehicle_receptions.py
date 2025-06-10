@@ -19,8 +19,8 @@ async def get_vehicle_receptions(
     sort_order: str = Query("desc", pattern="^(asc|desc)$"),
     company_filter: Optional[str] = Query(None),
     water_type_filter: Optional[str] = Query(None),
-    date_from: Optional[datetime] = Query(None),
-    date_to: Optional[datetime] = Query(None),
+    date_from: Optional[str] = Query(None),
+    date_to: Optional[str] = Query(None),
     db: Session = Depends(get_db),
     current_user: models.User = Depends(require_admin_or_above)
 ):
@@ -36,11 +36,25 @@ async def get_vehicle_receptions(
     if water_type_filter:
         query = query.filter(models.VehicleReception.water_type.ilike(f"%{water_type_filter}%"))
     
-    if date_from:
-        query = query.filter(models.VehicleReception.date >= date_from)
+    if date_from and date_from.strip():
+        try:
+            date_from_dt = datetime.strptime(date_from.strip(), '%Y-%m-%d').date()
+            query = query.filter(models.VehicleReception.date >= date_from_dt)
+        except ValueError:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Invalid date_from format. Use YYYY-MM-DD"
+            )
     
-    if date_to:
-        query = query.filter(models.VehicleReception.date <= date_to)
+    if date_to and date_to.strip():
+        try:
+            date_to_dt = datetime.strptime(date_to.strip(), '%Y-%m-%d').date()
+            query = query.filter(models.VehicleReception.date <= date_to_dt)
+        except ValueError:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Invalid date_to format. Use YYYY-MM-DD"
+            )
     
     # Apply sorting
     sort_column = getattr(models.VehicleReception, sort_by)
@@ -188,8 +202,8 @@ async def delete_vehicle_reception(
 
 @router.get("/stats/summary")
 async def get_reception_stats(
-    date_from: Optional[datetime] = Query(None),
-    date_to: Optional[datetime] = Query(None),
+    date_from: Optional[str] = Query(None),
+    date_to: Optional[str] = Query(None),
     db: Session = Depends(get_db),
     current_user: models.User = Depends(require_admin_or_above)
 ):
@@ -198,12 +212,26 @@ async def get_reception_stats(
     # Base query
     query = db.query(models.VehicleReception).filter(models.VehicleReception.is_active == True)
     
-    # Apply date filters
-    if date_from:
-        query = query.filter(models.VehicleReception.date >= date_from)
+    # Apply date filters with proper parsing
+    if date_from and date_from.strip():
+        try:
+            date_from_dt = datetime.strptime(date_from.strip(), '%Y-%m-%d').date()
+            query = query.filter(models.VehicleReception.date >= date_from_dt)
+        except ValueError:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Invalid date_from format. Use YYYY-MM-DD"
+            )
     
-    if date_to:
-        query = query.filter(models.VehicleReception.date <= date_to)
+    if date_to and date_to.strip():
+        try:
+            date_to_dt = datetime.strptime(date_to.strip(), '%Y-%m-%d').date()
+            query = query.filter(models.VehicleReception.date <= date_to_dt)
+        except ValueError:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Invalid date_to format. Use YYYY-MM-DD"
+            )
     
     receptions = query.all()
     
