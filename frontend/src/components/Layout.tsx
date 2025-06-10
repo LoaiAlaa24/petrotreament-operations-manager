@@ -7,7 +7,8 @@ import {
   HomeIcon, 
   DocumentChartBarIcon,
   UserIcon,
-  ArrowRightOnRectangleIcon
+  ArrowRightOnRectangleIcon,
+  PlusIcon
 } from '@heroicons/react/24/outline';
 import LanguageSwitcher from './LanguageSwitcher';
 
@@ -39,6 +40,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   const navigation = [
     { name: t('nav.dashboard'), href: '/', icon: HomeIcon, current: location.pathname === '/' },
+    { name: t('nav.addReception'), href: '/enhanced-reception', icon: PlusIcon, current: location.pathname === '/enhanced-reception' },
     { name: t('nav.reports'), href: '/reports', icon: DocumentChartBarIcon, current: location.pathname === '/reports' },
   ];
 

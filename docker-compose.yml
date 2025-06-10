@@ -10,7 +10,7 @@ services:
     environment:
       - DATABASE_URL=postgresql://station_user:station_password@db:5432/station_ops
       - SECRET_KEY=station-ops-secret-key-change-in-production-2024
-      - CORS_ORIGINS_STR=http://localhost:3000,http://127.0.0.1:3000
+      - CORS_ORIGINS_STR=http://localhost:3000,http://127.0.0.1:3000,http://172.26.0.2:3000,http://172.26.0.3:3000,http://172.26.0.4:3000
     volumes:
       - ./backend:/app
       - backend_data:/app/data

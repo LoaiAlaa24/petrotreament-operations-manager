@@ -65,7 +65,7 @@ def translate_to_english(text: str) -> str:
         'نفايات خطرة': 'Hazardous Waste',
         'نفايات غير خطرة': 'Non-Hazardous Waste',
         'زيوت': 'Oils',
-        'طافلة': 'Overflow',
+        'طافلة': 'Oil Based Mud waste (OBM)',
         'مياه ملوثة': 'Contaminated Water',
         'حمأة': 'Sludge',
         'نفايات صناعية': 'Industrial Waste',

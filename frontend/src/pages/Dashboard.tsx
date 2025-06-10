@@ -293,31 +293,37 @@ const Dashboard: React.FC = () => {
 
       {/* Quick Actions */}
       <div className="bg-white shadow rounded-lg p-6">
-        <div className={`flex items-center justify-between mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
-          <h3 className={`text-lg font-medium text-gray-900 ${isRTL ? 'text-right' : 'text-left'}`}>{t('dashboard.quickActions')}</h3>
-          <div className={`flex items-center gap-3 ${isRTL ? 'flex-row-reverse' : ''}`}>
-            <button
-              onClick={() => setShowForm(true)}
-              className="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
-            >
-              <PlusIcon className={`h-4 w-4 ${isRTL ? 'ml-2 -mr-1' : '-ml-1 mr-2'}`} />
-              {t('dashboard.addReception')}
-            </button>
-            <a
-              href="/enhanced-reception"
-              className="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            >
-              <PlusIcon className={`h-4 w-4 ${isRTL ? 'ml-2 -mr-1' : '-ml-1 mr-2'}`} />
-              {t('form.addNewEnhanced')}
-            </a>
-            <a
-              href="/reports"
-              className="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-            >
-              <DocumentArrowDownIcon className={`h-4 w-4 ${isRTL ? 'ml-2 -mr-1' : '-ml-1 mr-2'}`} />
-              {t('dashboard.generateReports')}
-            </a>
-          </div>
+        <div 
+          className="mb-4" 
+          style={{ 
+            display: 'flex', 
+            justifyContent: isRTL ? 'flex-end' : 'flex-start',
+            textAlign: isRTL ? 'right' : 'left'
+          }}
+        >
+          <h3 className="text-lg font-medium text-gray-900">{t('dashboard.quickActions')}</h3>
+        </div>
+        <div 
+          className="flex gap-3" 
+          style={{ 
+            justifyContent: isRTL ? 'flex-end' : 'flex-start',
+            flexDirection: isRTL ? 'row-reverse' : 'row'
+          }}
+        >
+          <a
+            href="/enhanced-reception"
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+          >
+            <PlusIcon className={`h-5 w-5 ${isRTL ? 'ml-2 -mr-1' : '-ml-1 mr-2'}`} />
+            {t('dashboard.addReception')}
+          </a>
+          <a
+            href="/reports"
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+          >
+            <DocumentArrowDownIcon className={`h-5 w-5 ${isRTL ? 'ml-2 -mr-1' : '-ml-1 mr-2'}`} />
+            {t('dashboard.generateReports')}
+          </a>
         </div>
       </div>
 

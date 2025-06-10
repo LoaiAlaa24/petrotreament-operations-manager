@@ -10,6 +10,16 @@ interface EnhancedVehicleReceptionFormProps {
   isLoading?: boolean;
 }
 
+interface VehicleFormData {
+  tractor_number: string;
+  trailer_number: string;
+  vehicle_type: string;
+  driver_name: string;
+  car_brand: string;
+  vehicle_quantity: number;
+  vehicle_order: number;
+}
+
 interface FormData {
   date: string;
   company_name: string;
@@ -19,7 +29,7 @@ interface FormData {
   departure_time?: string;
   exit_time_drilling?: string;
   notes?: string;
-  vehicles: VehicleCreate[];
+  vehicles: VehicleFormData[];
 }
 
 export const EnhancedVehicleReceptionForm: React.FC<EnhancedVehicleReceptionFormProps> = ({
@@ -51,7 +61,8 @@ export const EnhancedVehicleReceptionForm: React.FC<EnhancedVehicleReceptionForm
       total_quantity: 0,
       vehicles: [
         {
-          vehicle_number: '',
+          tractor_number: '',
+          trailer_number: '',
           vehicle_type: '',
           driver_name: '',
           car_brand: '',
@@ -85,7 +96,8 @@ export const EnhancedVehicleReceptionForm: React.FC<EnhancedVehicleReceptionForm
   const addVehicle = () => {
     const newOrder = fields.length + 1;
     append({
-      vehicle_number: '',
+      tractor_number: '',
+      trailer_number: '',
       vehicle_type: '',
       driver_name: '',
       car_brand: '',
@@ -120,6 +132,7 @@ export const EnhancedVehicleReceptionForm: React.FC<EnhancedVehicleReceptionForm
     // Update vehicle orders and calculate total quantity
     const updatedVehicles = data.vehicles.map((vehicle, index) => ({
       ...vehicle,
+      vehicle_number: `${vehicle.tractor_number}-${vehicle.trailer_number}`,
       vehicle_order: index + 1,
       vehicle_quantity: parseFloat(vehicle.vehicle_quantity?.toString() || '0'),
     }));
@@ -396,22 +409,42 @@ export const EnhancedVehicleReceptionForm: React.FC<EnhancedVehicleReceptionForm
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {/* Vehicle Number */}
+                  {/* Tractor Number */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      {t('form.vehicleNumber')} *
+                      {t('form.tractorNumber')} *
                     </label>
                     <input
                       type="text"
-                      {...register(`vehicles.${index}.vehicle_number`, {
-                        required: t('form.vehicleNumberRequired'),
+                      {...register(`vehicles.${index}.tractor_number`, {
+                        required: t('form.tractorNumberRequired'),
                       })}
                       className="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
-                      placeholder="123-ABC-456"
+                      placeholder="123-ABC"
                     />
-                    {errors.vehicles?.[index]?.vehicle_number && (
+                    {errors.vehicles?.[index]?.tractor_number && (
                       <p className="mt-1 text-sm text-red-600">
-                        {errors.vehicles[index]?.vehicle_number?.message}
+                        {errors.vehicles[index]?.tractor_number?.message}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Trailer Number */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      {t('form.trailerNumber')} *
+                    </label>
+                    <input
+                      type="text"
+                      {...register(`vehicles.${index}.trailer_number`, {
+                        required: t('form.trailerNumberRequired'),
+                      })}
+                      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
+                      placeholder="456-XYZ"
+                    />
+                    {errors.vehicles?.[index]?.trailer_number && (
+                      <p className="mt-1 text-sm text-red-600">
+                        {errors.vehicles[index]?.trailer_number?.message}
                       </p>
                     )}
                   </div>
@@ -480,7 +513,7 @@ export const EnhancedVehicleReceptionForm: React.FC<EnhancedVehicleReceptionForm
                   </div>
 
                   {/* Vehicle Quantity */}
-                  <div className="md:col-span-2">
+                  <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       {t('form.vehicleQuantity')} *
                     </label>
@@ -492,7 +525,7 @@ export const EnhancedVehicleReceptionForm: React.FC<EnhancedVehicleReceptionForm
                         required: t('form.vehicleQuantityRequired'),
                         min: { value: 0, message: t('form.quantityMin') },
                       })}
-                      className="block w-full md:w-1/2 rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
+                      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
                     />
                     {errors.vehicles?.[index]?.vehicle_quantity && (
                       <p className="mt-1 text-sm text-red-600">

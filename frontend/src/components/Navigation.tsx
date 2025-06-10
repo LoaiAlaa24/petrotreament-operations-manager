@@ -4,7 +4,8 @@ import { Link, useLocation } from 'react-router-dom';
 import { 
   ChartBarIcon, 
   DocumentArrowDownIcon,
-  ArrowRightOnRectangleIcon 
+  ArrowRightOnRectangleIcon,
+  PlusIcon 
 } from '@heroicons/react/24/outline';
 import LanguageSwitcher from './LanguageSwitcher';
 
@@ -23,6 +24,12 @@ const Navigation: React.FC<NavigationProps> = ({ onLogout }) => {
       href: '/',
       icon: ChartBarIcon,
       current: location.pathname === '/'
+    },
+    {
+      name: t('nav.addReception'),
+      href: '/enhanced-reception',
+      icon: PlusIcon,
+      current: location.pathname === '/enhanced-reception'
     },
     {
       name: t('nav.reports'),

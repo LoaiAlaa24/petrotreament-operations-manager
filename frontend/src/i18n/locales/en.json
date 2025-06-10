@@ -1,6 +1,7 @@
 {
   "nav": {
     "dashboard": "Dashboard", 
+    "addReception": "Add Reception",
     "reports": "Reports",
     "language": "Language",
     "logout": "Logout",
@@ -39,7 +40,7 @@
   },
   "form": {
     "addNew": "Add New Vehicle Reception",
-    "addNewEnhanced": "Add New Enhanced Vehicle Reception",
+    "addNewEnhanced": "Add Reception",
     "edit": "Edit Vehicle Reception",
     "date": "Date",
     "dateRequired": "Date is required",
@@ -68,6 +69,10 @@
     "saving": "Saving...",
     "vehicleNumber": "Vehicle Number (Tractor & Trailer)",
     "vehicleNumberRequired": "Vehicle number is required",
+    "tractorNumber": "Tractor Number",
+    "tractorNumberRequired": "Tractor number is required",
+    "trailerNumber": "Trailer Number",
+    "trailerNumberRequired": "Trailer number is required",
     "vehicleType": "Vehicle Type",
     "vehicleTypeRequired": "Vehicle type is required",
     "selectVehicleType": "Select vehicle type",
@@ -179,10 +184,12 @@
   },
   "companies": [
     "Petronifertiti",
-    "Unico",
-    "Nesbco North Sinai",
-    "Al-Asria Petroleum",
-    "Sinai Gas",
+    "MK - Unico",
+    "Unico - Qantara",
+    "Apsco",
+    "Amer Group (Port Said)",
+    "Nesbco (North Sinai Petroleum)",
+    "Shelf Drilling",
     "Other"
   ],
   "waterTypes": [
