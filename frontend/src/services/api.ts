@@ -2,6 +2,7 @@ import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import {
   VehicleReception,
   VehicleReceptionCreate,
+  EnhancedVehicleReceptionCreate,
   VehicleReceptionUpdate,
   VehicleReceptionList,
   User,
@@ -101,6 +102,14 @@ class ApiService {
   createVehicleReception = async (data: VehicleReceptionCreate): Promise<VehicleReception> => {
     const response: AxiosResponse<VehicleReception> = await this.api.post(
       '/vehicle-receptions/',
+      data
+    );
+    return response.data;
+  }
+
+  createEnhancedVehicleReception = async (data: EnhancedVehicleReceptionCreate): Promise<VehicleReception> => {
+    const response: AxiosResponse<VehicleReception> = await this.api.post(
+      '/vehicle-receptions/enhanced',
       data
     );
     return response.data;

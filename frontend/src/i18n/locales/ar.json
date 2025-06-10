@@ -39,6 +39,7 @@
   },
   "form": {
     "addNew": "إضافة استقبال مركبة جديد",
+    "addNewEnhanced": "إضافة استقبال مركبة محسن جديد",
     "edit": "تعديل استقبال المركبة",
     "date": "التاريخ",
     "dateRequired": "التاريخ مطلوب",
@@ -64,7 +65,28 @@
     "cancel": "إلغاء",
     "create": "إنشاء",
     "update": "تحديث",
-    "saving": "جاري الحفظ..."
+    "saving": "جاري الحفظ...",
+    "vehicleNumber": "رقم القاطرة و المقطورة",
+    "vehicleNumberRequired": "رقم المركبة مطلوب",
+    "vehicleType": "نوع المركبة",
+    "vehicleTypeRequired": "نوع المركبة مطلوب",
+    "selectVehicleType": "اختر نوع المركبة",
+    "driverName": "اسم السائق",
+    "driverNameRequired": "اسم السائق مطلوب",
+    "carBrand": "ماركة السيارة",
+    "carBrandRequired": "ماركة السيارة مطلوبة",
+    "vehicleQuantity": "كمية المركبة (م³)",
+    "vehicleQuantityRequired": "كمية المركبة مطلوبة",
+    "addVehicle": "إضافة مركبة أخرى",
+    "removeVehicle": "إزالة المركبة",
+    "vehicleDetails": "تفاصيل المركبة",
+    "vehicle": "مركبة",
+    "confirmSubmission": "تأكيد الإرسال",
+    "receptionSummary": "ملخص الاستقبال",
+    "totalVehicles": "إجمالي المركبات",
+    "vehiclesList": "قائمة المركبات",
+    "receptionNumber": "رقم الاستقبال",
+    "submissionSuccess": "تم تقديم الاستقبال بنجاح!"
   },
   "table": {
     "date": "التاريخ",
@@ -174,6 +196,12 @@
     "مياه ملوثة بالزيت",
     "نفايات كيميائية",
     "أخرى"
+  ],
+  "vehicleTypes": [
+    "فنطاس",
+    "قلاب",
+    "ترلا فرش",
+    "سيارات متنوع"
   ],
   "common": {
     "loading": "جاري التحميل...",

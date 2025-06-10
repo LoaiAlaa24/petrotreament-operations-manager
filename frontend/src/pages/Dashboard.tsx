@@ -304,6 +304,13 @@ const Dashboard: React.FC = () => {
               {t('dashboard.addReception')}
             </button>
             <a
+              href="/enhanced-reception"
+              className="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              <PlusIcon className={`h-4 w-4 ${isRTL ? 'ml-2 -mr-1' : '-ml-1 mr-2'}`} />
+              {t('form.addNewEnhanced')}
+            </a>
+            <a
               href="/reports"
               className="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
             >

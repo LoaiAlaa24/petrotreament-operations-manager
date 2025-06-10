@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import Dashboard from './pages/Dashboard';
 import ReportsPage from './pages/ReportsPage';
 import LoginPage from './pages/LoginPage';
+import { EnhancedReceptionPage } from './pages/EnhancedReceptionPage';
 import { AuthProvider, useAuth } from './hooks/useAuth';
 import Layout from './components/Layout';
 import './i18n'; // Initialize i18n
@@ -108,6 +109,14 @@ function App() {
                   element={
                     <ProtectedRoute>
                       <ReportsPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/enhanced-reception"
+                  element={
+                    <ProtectedRoute>
+                      <EnhancedReceptionPage />
                     </ProtectedRoute>
                   }
                 />

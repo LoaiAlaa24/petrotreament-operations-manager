@@ -1,13 +1,51 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 from pydantic import BaseModel, Field, validator
 
 
+# Vehicle schemas
+class VehicleBase(BaseModel):
+    """Base schema for individual vehicle"""
+    vehicle_number: str = Field(..., max_length=100)
+    vehicle_type: str = Field(..., max_length=50)
+    driver_name: str = Field(..., max_length=100)
+    car_brand: str = Field(..., max_length=100)
+    vehicle_quantity: float = Field(..., ge=0)
+    vehicle_order: int = Field(..., ge=1)
+
+
+class VehicleCreate(VehicleBase):
+    """Schema for creating vehicle"""
+    pass
+
+
+class VehicleUpdate(BaseModel):
+    """Schema for updating vehicle"""
+    vehicle_number: Optional[str] = None
+    vehicle_type: Optional[str] = None
+    driver_name: Optional[str] = None
+    car_brand: Optional[str] = None
+    vehicle_quantity: Optional[float] = None
+    vehicle_order: Optional[int] = None
+
+
+class Vehicle(VehicleBase):
+    """Schema for vehicle response"""
+    id: int
+    reception_id: int
+    created_at: datetime
+    updated_at: datetime
+    is_active: bool
+    
+    class Config:
+        from_attributes = True
+
+
+# Reception schemas (updated)
 class VehicleReceptionBase(BaseModel):
     """Base schema for vehicle reception"""
     date: datetime
     company_name: str = Field(..., max_length=100)
-    number_of_vehicles: int = Field(..., ge=1)
     water_type: str = Field(..., max_length=50)
     total_quantity: float = Field(..., ge=0)
     arrival_time: Optional[datetime] = None
@@ -16,9 +54,14 @@ class VehicleReceptionBase(BaseModel):
     notes: Optional[str] = None
 
 
+class EnhancedVehicleReceptionCreate(VehicleReceptionBase):
+    """Schema for creating enhanced vehicle reception with multiple vehicles"""
+    vehicles: List[VehicleCreate] = Field(..., min_items=1)
+
+
 class VehicleReceptionCreate(VehicleReceptionBase):
-    """Schema for creating vehicle reception record"""
-    pass
+    """Schema for creating simple vehicle reception (backward compatibility)"""
+    number_of_vehicles: int = Field(..., ge=1)
 
 
 class VehicleReceptionUpdate(BaseModel):
@@ -37,11 +80,14 @@ class VehicleReceptionUpdate(BaseModel):
 class VehicleReception(VehicleReceptionBase):
     """Schema for vehicle reception response"""
     id: int
+    number_of_vehicles: int  # Calculated from vehicles
     day_of_week: str  # This will be auto-generated from date
+    reception_number: Optional[str] = None
     created_at: datetime
     updated_at: datetime
     is_active: bool
     created_by: Optional[int] = None
+    vehicles: List[Vehicle] = []
     
     class Config:
         from_attributes = True

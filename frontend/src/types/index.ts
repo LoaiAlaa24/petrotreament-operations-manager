@@ -1,3 +1,37 @@
+// Vehicle interfaces
+export interface Vehicle {
+  id: number;
+  reception_id: number;
+  vehicle_number: string;
+  vehicle_type: string;
+  driver_name: string;
+  car_brand: string;
+  vehicle_quantity: number;
+  vehicle_order: number;
+  created_at: string;
+  updated_at: string;
+  is_active: boolean;
+}
+
+export interface VehicleCreate {
+  vehicle_number: string;
+  vehicle_type: string;
+  driver_name: string;
+  car_brand: string;
+  vehicle_quantity: number;
+  vehicle_order: number;
+}
+
+export interface VehicleUpdate {
+  vehicle_number?: string;
+  vehicle_type?: string;
+  driver_name?: string;
+  car_brand?: string;
+  vehicle_quantity?: number;
+  vehicle_order?: number;
+}
+
+// Reception interfaces (updated)
 export interface VehicleReception {
   id: number;
   date: string;
@@ -10,10 +44,12 @@ export interface VehicleReception {
   departure_time?: string;
   exit_time_drilling?: string;
   notes?: string;
+  reception_number?: string;
   created_at: string;
   updated_at: string;
   is_active: boolean;
   created_by?: number;
+  vehicles: Vehicle[];
 }
 
 export interface VehicleReceptionCreate {
@@ -26,6 +62,18 @@ export interface VehicleReceptionCreate {
   departure_time?: string;
   exit_time_drilling?: string;
   notes?: string;
+}
+
+export interface EnhancedVehicleReceptionCreate {
+  date: string;
+  company_name: string;
+  water_type: string;
+  total_quantity: number;
+  arrival_time?: string;
+  departure_time?: string;
+  exit_time_drilling?: string;
+  notes?: string;
+  vehicles: VehicleCreate[];
 }
 
 export interface VehicleReceptionUpdate {

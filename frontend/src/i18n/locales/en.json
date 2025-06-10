@@ -39,6 +39,7 @@
   },
   "form": {
     "addNew": "Add New Vehicle Reception",
+    "addNewEnhanced": "Add New Enhanced Vehicle Reception",
     "edit": "Edit Vehicle Reception",
     "date": "Date",
     "dateRequired": "Date is required",
@@ -64,7 +65,28 @@
     "cancel": "Cancel",
     "create": "Create",
     "update": "Update",
-    "saving": "Saving..."
+    "saving": "Saving...",
+    "vehicleNumber": "Vehicle Number (Tractor & Trailer)",
+    "vehicleNumberRequired": "Vehicle number is required",
+    "vehicleType": "Vehicle Type",
+    "vehicleTypeRequired": "Vehicle type is required",
+    "selectVehicleType": "Select vehicle type",
+    "driverName": "Driver Name",
+    "driverNameRequired": "Driver name is required",
+    "carBrand": "Car Brand",
+    "carBrandRequired": "Car brand is required",
+    "vehicleQuantity": "Vehicle Quantity (m³)",
+    "vehicleQuantityRequired": "Vehicle quantity is required",
+    "addVehicle": "Add Another Vehicle",
+    "removeVehicle": "Remove Vehicle",
+    "vehicleDetails": "Vehicle Details",
+    "vehicle": "Vehicle",
+    "confirmSubmission": "Confirm Submission",
+    "receptionSummary": "Reception Summary",
+    "totalVehicles": "Total Vehicles",
+    "vehiclesList": "Vehicles List",
+    "receptionNumber": "Reception Number",
+    "submissionSuccess": "Reception submitted successfully!"
   },
   "table": {
     "date": "Date",
@@ -167,13 +189,19 @@
     "Hazardous Waste",
     "Non-Hazardous Waste",
     "Oils",
-    "Oil-based mud (OBM)",
+    "Overflow",
     "Contaminated Water",
     "Sludge",
     "Industrial Waste",
     "Oil-Contaminated Water",
     "Chemical Waste",
     "Other"
+  ],
+  "vehicleTypes": [
+    "فنطاس",
+    "قلاب",
+    "ترلا فرش",
+    "سيارات متنوع"
   ],
   "common": {
     "loading": "Loading...",

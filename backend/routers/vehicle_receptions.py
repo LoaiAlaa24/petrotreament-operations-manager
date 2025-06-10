@@ -103,13 +103,58 @@ async def get_vehicle_reception(
     return reception
 
 
+@router.post("/enhanced", response_model=schemas.VehicleReception, status_code=status.HTTP_201_CREATED)
+async def create_enhanced_vehicle_reception(
+    reception_data: schemas.EnhancedVehicleReceptionCreate,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(require_admin_or_above)
+):
+    """Create a new enhanced vehicle reception record with multiple vehicles"""
+    
+    # Generate unique reception number
+    import uuid
+    reception_number = f"RCP-{datetime.now().strftime('%Y%m%d')}-{str(uuid.uuid4())[:8].upper()}"
+    
+    # Calculate total number of vehicles
+    number_of_vehicles = len(reception_data.vehicles)
+    
+    # Create reception record
+    reception_dict = reception_data.dict(exclude={'vehicles'})
+    reception_dict.update({
+        'day_of_week': reception_data.date.strftime('%A'),
+        'created_by': current_user.id,
+        'reception_number': reception_number,
+        'number_of_vehicles': number_of_vehicles
+    })
+    
+    db_reception = models.VehicleReception(**reception_dict)
+    db.add(db_reception)
+    db.commit()
+    db.refresh(db_reception)
+    
+    # Create vehicle records
+    for vehicle_data in reception_data.vehicles:
+        vehicle_dict = vehicle_data.dict()
+        vehicle_dict['reception_id'] = db_reception.id
+        
+        db_vehicle = models.Vehicle(**vehicle_dict)
+        db.add(db_vehicle)
+    
+    db.commit()
+    
+    # Refresh to get vehicles
+    db.refresh(db_reception)
+    
+    return db_reception
+
+
 @router.post("/", response_model=schemas.VehicleReception, status_code=status.HTTP_201_CREATED)
 async def create_vehicle_reception(
     reception_data: schemas.VehicleReceptionCreate,
     db: Session = Depends(get_db),
     current_user: models.User = Depends(require_admin_or_above)
 ):
-    """Create a new vehicle reception record"""
+    """Create a new vehicle reception record (backward compatibility)"""
     
     # Create new reception with auto-generated day_of_week and created_by
     reception_dict = reception_data.dict()
