@@ -62,6 +62,10 @@ def translate_to_english(text: str) -> str:
     
     # Water type translations (Arabic to English)
     water_type_translations = {
+        'نفايات خطرة': 'Hazardous Waste',
+        'نفايات غير خطرة': 'Non-Hazardous Waste',
+        'زيوت': 'Oils',
+        'طافلة': 'Overflow',
         'مياه ملوثة': 'Contaminated Water',
         'حمأة': 'Sludge',
         'نفايات صناعية': 'Industrial Waste',

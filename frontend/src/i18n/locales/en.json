@@ -164,6 +164,10 @@
     "Other"
   ],
   "waterTypes": [
+    "Hazardous Waste",
+    "Non-Hazardous Waste",
+    "Oils",
+    "Oil-based mud (OBM)",
     "Contaminated Water",
     "Sludge",
     "Industrial Waste",
