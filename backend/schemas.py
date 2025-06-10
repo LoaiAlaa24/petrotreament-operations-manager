@@ -50,7 +50,6 @@ class VehicleReceptionBase(BaseModel):
     total_quantity: float = Field(..., ge=0)
     arrival_time: Optional[datetime] = None
     departure_time: Optional[datetime] = None
-    exit_time_drilling: Optional[datetime] = None
     notes: Optional[str] = None
     invoice_number: Optional[str] = Field(None, max_length=100)
 
@@ -74,7 +73,6 @@ class VehicleReceptionUpdate(BaseModel):
     total_quantity: Optional[float] = None
     arrival_time: Optional[datetime] = None
     departure_time: Optional[datetime] = None
-    exit_time_drilling: Optional[datetime] = None
     notes: Optional[str] = None
     invoice_number: Optional[str] = None
 

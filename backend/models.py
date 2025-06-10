@@ -15,7 +15,6 @@ class VehicleReception(Base):
     day_of_week = Column(String(20), nullable=False)
     arrival_time = Column(DateTime, nullable=True)
     departure_time = Column(DateTime, nullable=True)
-    exit_time_drilling = Column(DateTime, nullable=True)
     
     # Company and waste details
     company_name = Column(String(100), nullable=False)
