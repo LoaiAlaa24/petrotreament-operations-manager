@@ -195,8 +195,8 @@
   "waterTypes": [
     "Hazardous Waste",
     "Non-Hazardous Waste",
-    "Oils",
-    "Overflow",
+    "Oils (OBM)",
+    "Water-Based Mud (WBM)",
     "Contaminated Water",
     "Sludge",
     "Industrial Waste",

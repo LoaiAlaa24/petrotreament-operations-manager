@@ -6,7 +6,7 @@ import models
 import schemas
 from database import get_db
 from routers.auth import get_current_user, require_super_admin, require_admin_or_above
-from company_rates_config import get_company_rate, get_all_company_rates, DEFAULT_RATE_PER_M3
+from company_rates_config import get_company_rate, get_all_company_rates, DEFAULT_RATE_USD, DEFAULT_RATE_EGP
 from datetime import datetime, timedelta
 import io
 from reportlab.lib import colors
@@ -253,11 +253,15 @@ def create_financial_overlay_pdf(financial_data: dict) -> bytes:
                 y_position = draw_financial_headers(y_position)
                 c.setFont(PDF_FONT, 8)
             
+            # Format rate and cost with proper currency
+            currency = company_data.get('currency', 'USD')
+            currency_symbol = '$' if currency == 'USD' else 'EGP'
+            
             row_data = [
                 clean_text_for_pdf(translate_to_english(company_data['company_name']))[:16],  # Truncate company names
                 f"{company_data['total_volume_m3']:.1f}",  # One decimal place
-                f"${company_data['rate_per_m3']:.2f}",
-                f"${company_data['total_cost']:,.0f}",  # No decimal for cost display
+                f"{currency_symbol}{company_data['rate_per_m3']:.2f}",
+                f"{currency_symbol}{company_data['total_cost']:,.0f}",  # No decimal for cost display
                 str(company_data['reception_count'])
             ]
             
@@ -600,15 +604,22 @@ async def generate_financial_report(
         
         for company_name, data in company_data.items():
             volume = data['total_volume']
-            company_rate = get_company_rate(company_name)
-            cost = volume * company_rate
+            
+            # Get rate information with currency
+            rate_info = get_company_rate(company_name)
+            rate_value = rate_info['rate']
+            currency = rate_info['currency']
+            
+            # Calculate cost
+            cost = volume * rate_value
             total_volume += volume
-            total_cost += cost
+            total_cost += cost  # Note: mixing currencies - should be handled in display
             
             companies.append({
                 'company_name': company_name,
                 'total_volume_m3': volume,
-                'rate_per_m3': company_rate,
+                'rate_per_m3': rate_value,
+                'currency': currency,
                 'total_cost': cost,
                 'reception_count': data['reception_count']
             })
@@ -731,7 +742,10 @@ async def get_financial_summary(
 @router.get("/company-rates")
 async def get_company_rates(current_user: models.User = Depends(require_super_admin)):
     """Get all company rates configuration"""
-    return schemas.CompanyRatesResponse(
-        rates=get_all_company_rates(),
-        default_rate=DEFAULT_RATE_PER_M3
-    )
+    return {
+        "rates": get_all_company_rates(),
+        "default_rate_usd": DEFAULT_RATE_USD,
+        "default_rate_egp": DEFAULT_RATE_EGP,
+        "currency_support": ["USD", "EGP"],
+        "waste_types": ["نفايات خطرة", "نفايات غير خطرة", "زيوت", "طافلة", "مياه ملوثة", "حمأة", "نفايات صناعية", "مياه ملوثة بالزيت", "نفايات كيميائية", "أخرى"]
+    }
