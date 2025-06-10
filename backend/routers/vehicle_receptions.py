@@ -25,16 +25,15 @@ async def get_vehicle_receptions(
     current_user: models.User = Depends(require_admin_or_above)
 ):
     """Get paginated list of vehicle receptions with filtering and sorting"""
-    try:
-        # Base query
-        query = db.query(models.VehicleReception).filter(models.VehicleReception.is_active == True)
-        
-        # Apply filters
-        if company_filter:
-            query = query.filter(models.VehicleReception.company_name.ilike(f"%{company_filter}%"))
-        
-        if water_type_filter:
-            query = query.filter(models.VehicleReception.water_type.ilike(f"%{water_type_filter}%"))
+    # Base query
+    query = db.query(models.VehicleReception).filter(models.VehicleReception.is_active == True)
+    
+    # Apply filters
+    if company_filter:
+        query = query.filter(models.VehicleReception.company_name.ilike(f"%{company_filter}%"))
+    
+    if water_type_filter:
+        query = query.filter(models.VehicleReception.water_type.ilike(f"%{water_type_filter}%"))
     
     if date_from and date_from.strip():
         try:
@@ -72,25 +71,14 @@ async def get_vehicle_receptions(
     
     # Calculate total pages
     pages = (total + size - 1) // size
-        
-        return schemas.VehicleReceptionList(
-            items=items,
-            total=total,
-            page=page,
-            size=size,
-            pages=pages
-        )
     
-    except Exception as e:
-        print(f"Error in get_vehicle_receptions: {e}")
-        # Return empty result on error for production compatibility
-        return schemas.VehicleReceptionList(
-            items=[],
-            total=0,
-            page=page,
-            size=size,
-            pages=0
-        )
+    return schemas.VehicleReceptionList(
+        items=items,
+        total=total,
+        page=page,
+        size=size,
+        pages=pages
+    )
 
 
 @router.get("/{reception_id}", response_model=schemas.VehicleReception)
