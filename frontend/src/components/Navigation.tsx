@@ -47,9 +47,9 @@ const Navigation: React.FC<NavigationProps> = ({ onLogout }) => {
           <div className="flex">
             <div className="flex-shrink-0 flex items-center">
               <img 
-                src="/logo-petro.png" 
+                src="/logo-petro.svg" 
                 alt="P.P.E.S." 
-                className="h-8 w-8"
+                className="h-18 w-12"
               />
               <div className={`ml-2 ${isRTL ? 'mr-2 ml-0' : ''}`}>
                 <span className="text-xl font-bold text-gray-900">

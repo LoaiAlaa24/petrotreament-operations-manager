@@ -37,7 +37,7 @@ const LoginPage: React.FC = () => {
       <div className="max-w-md w-full space-y-8">
         <div>
           <div className="flex justify-center mb-6">
-            <img src="/logo-petro.png" alt="P.P.E.S. Logo" className="h-40 w-30" />
+            <img src="/logo-petro.svg" alt="P.P.E.S. Logo" className="h-40 w-30" />
           </div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
             {t('dashboard.subtitle').split(' - ')[0]}

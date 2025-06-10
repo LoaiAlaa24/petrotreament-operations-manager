@@ -68,7 +68,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           
           <div className="flex-1 h-0 pt-5 pb-4 overflow-y-auto">
             <div className="flex-shrink-0 flex items-center px-4">
-              <img src="/logo-petro.png" alt="P.P.E.S." className={`h-16 w-12 ${isRTL ? 'ml-3' : 'mr-3'}`} />
+              <img src="/logo-petro.svg" alt="P.P.E.S." className={`h-18 w-12 ${isRTL ? 'ml-3' : 'mr-3'}`} />
               <div>
                 <h1 className="text-lg font-bold text-gray-900">{t('nav.companyName')}</h1>
                 <p className="text-xs text-gray-600">{t('nav.appTitle')}</p>
@@ -118,7 +118,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <div className={`flex-1 flex flex-col min-h-0 bg-white ${isRTL ? 'border-l border-gray-200' : 'border-r border-gray-200'}`}>
           <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
             <div className="flex items-center flex-shrink-0 px-4">
-              <img src="/logo-petro.png" alt="P.P.E.S." className={`h-10 w-10 ${isRTL ? 'ml-3' : 'mr-3'}`} />
+              <img src="/logo-petro.svg" alt="P.P.E.S." className={`h-18 w-12 ${isRTL ? 'ml-3' : 'mr-3'}`} />
               <div>
                 <h1 className="text-xl font-bold text-gray-900">{t('nav.companyName')}</h1>
                 <p className="text-sm text-gray-600">{t('nav.appTitle')}</p>
