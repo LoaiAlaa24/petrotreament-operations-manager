@@ -387,12 +387,6 @@ const Dashboard: React.FC = () => {
                     <p className="text-gray-900">{format(new Date(viewingReception.departure_time), 'HH:mm')}</p>
                   </div>
                 )}
-                {viewingReception.exit_time_drilling && (
-                  <div className="col-span-2">
-                    <span className="font-medium text-gray-500">{t('form.exitTime')}:</span>
-                    <p className="text-gray-900">{format(new Date(viewingReception.exit_time_drilling), 'HH:mm')}</p>
-                  </div>
-                )}
                 {viewingReception.notes && (
                   <div className="col-span-2">
                     <span className="font-medium text-gray-500">{t('form.notes')}:</span>
