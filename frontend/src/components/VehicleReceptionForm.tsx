@@ -35,13 +35,13 @@ export const VehicleReceptionForm: React.FC<VehicleReceptionFormProps> = ({
   } = useForm<VehicleReceptionCreate>({
     defaultValues: initialData ? {
       date: format(new Date(initialData.date), 'yyyy-MM-dd'),
+      invoice_number: initialData.invoice_number || '',
       company_name: initialData.company_name,
       number_of_vehicles: initialData.number_of_vehicles,
       water_type: initialData.water_type,
       total_quantity: initialData.total_quantity,
       arrival_time: initialData.arrival_time ? format(new Date(initialData.arrival_time), 'HH:mm') : '',
       departure_time: initialData.departure_time ? format(new Date(initialData.departure_time), 'HH:mm') : '',
-      exit_time_drilling: initialData.exit_time_drilling ? format(new Date(initialData.exit_time_drilling), 'HH:mm') : '',
       notes: initialData.notes || '',
     } : {
       date: format(new Date(), 'yyyy-MM-dd'),
@@ -82,7 +82,6 @@ export const VehicleReceptionForm: React.FC<VehicleReceptionFormProps> = ({
       total_quantity: parseFloat(data.total_quantity),
       arrival_time: data.arrival_time ? formatDateTime(data.date, data.arrival_time) : undefined,
       departure_time: data.departure_time ? formatDateTime(data.date, data.departure_time) : undefined,
-      exit_time_drilling: data.exit_time_drilling ? formatDateTime(data.date, data.exit_time_drilling) : undefined,
     };
 
     console.log('✨ Formatted data being sent:', formattedData);
@@ -111,6 +110,20 @@ export const VehicleReceptionForm: React.FC<VehicleReceptionFormProps> = ({
             {errors.date && (
               <p className="mt-1 text-sm text-red-600">{errors.date.message}</p>
             )}
+          </div>
+
+          {/* Invoice Number */}
+          <div>
+            <label htmlFor="invoice_number" className="block text-sm font-medium text-gray-700 mb-1">
+              {t('form.invoiceNumber')}
+            </label>
+            <input
+              type="text"
+              id="invoice_number"
+              {...register('invoice_number')}
+              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
+              placeholder={t('form.invoiceNumberPlaceholder')}
+            />
           </div>
 
 
@@ -243,18 +256,6 @@ export const VehicleReceptionForm: React.FC<VehicleReceptionFormProps> = ({
             />
           </div>
 
-          {/* Exit Time from Drilling */}
-          <div className="md:col-span-2">
-            <label htmlFor="exit_time_drilling" className="block text-sm font-medium text-gray-700 mb-1">
-              {t('form.exitTime')}
-            </label>
-            <input
-              type="time"
-              id="exit_time_drilling"
-              {...register('exit_time_drilling')}
-              className="block w-full md:w-1/2 rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
-            />
-          </div>
 
           {/* Notes */}
           <div className="md:col-span-2">

@@ -42,9 +42,9 @@ export interface VehicleReception {
   total_quantity: number;
   arrival_time?: string;
   departure_time?: string;
-  exit_time_drilling?: string;
   notes?: string;
   reception_number?: string;
+  invoice_number?: string;
   created_at: string;
   updated_at: string;
   is_active: boolean;
@@ -60,8 +60,8 @@ export interface VehicleReceptionCreate {
   total_quantity: number;
   arrival_time?: string;
   departure_time?: string;
-  exit_time_drilling?: string;
   notes?: string;
+  invoice_number?: string;
 }
 
 export interface EnhancedVehicleReceptionCreate {
@@ -71,8 +71,8 @@ export interface EnhancedVehicleReceptionCreate {
   total_quantity: number;
   arrival_time?: string;
   departure_time?: string;
-  exit_time_drilling?: string;
   notes?: string;
+  invoice_number?: string;
   vehicles: VehicleCreate[];
 }
 
@@ -84,8 +84,8 @@ export interface VehicleReceptionUpdate {
   total_quantity?: number;
   arrival_time?: string;
   departure_time?: string;
-  exit_time_drilling?: string;
   notes?: string;
+  invoice_number?: string;
 }
 
 export interface VehicleReceptionList {

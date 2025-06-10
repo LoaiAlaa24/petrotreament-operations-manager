@@ -22,12 +22,12 @@ interface VehicleFormData {
 
 interface FormData {
   date: string;
+  invoice_number?: string;
   company_name: string;
   water_type: string;
   total_quantity: number;
   arrival_time?: string;
   departure_time?: string;
-  exit_time_drilling?: string;
   notes?: string;
   vehicles: VehicleFormData[];
 }
@@ -147,7 +147,6 @@ export const EnhancedVehicleReceptionForm: React.FC<EnhancedVehicleReceptionForm
       total_quantity: totalQuantity,
       arrival_time: data.arrival_time ? formatDateTime(data.date, data.arrival_time) : undefined,
       departure_time: data.departure_time ? formatDateTime(data.date, data.departure_time) : undefined,
-      exit_time_drilling: data.exit_time_drilling ? formatDateTime(data.date, data.exit_time_drilling) : undefined,
       vehicles: updatedVehicles,
     };
 
@@ -179,6 +178,9 @@ export const EnhancedVehicleReceptionForm: React.FC<EnhancedVehicleReceptionForm
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div><strong>{t('form.date')}:</strong> {format(new Date(formDataToSubmit.date), 'yyyy-MM-dd')}</div>
+            {formDataToSubmit.invoice_number && (
+              <div><strong>{t('form.invoiceNumber')}:</strong> {formDataToSubmit.invoice_number}</div>
+            )}
             <div><strong>{t('form.company')}:</strong> {formDataToSubmit.company_name}</div>
             <div><strong>{t('form.waterType')}:</strong> {formDataToSubmit.water_type}</div>
             <div><strong>{t('form.quantity')}:</strong> {formDataToSubmit.total_quantity.toFixed(2)} m³</div>
@@ -248,6 +250,20 @@ export const EnhancedVehicleReceptionForm: React.FC<EnhancedVehicleReceptionForm
               {errors.date && (
                 <p className="mt-1 text-sm text-red-600">{errors.date.message}</p>
               )}
+            </div>
+
+            {/* Invoice Number */}
+            <div>
+              <label htmlFor="invoice_number" className="block text-sm font-medium text-gray-700 mb-1">
+                {t('form.invoiceNumber')}
+              </label>
+              <input
+                type="text"
+                id="invoice_number"
+                {...register('invoice_number')}
+                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
+                placeholder={t('form.invoiceNumberPlaceholder')}
+              />
             </div>
 
             {/* Company Name */}
@@ -348,18 +364,6 @@ export const EnhancedVehicleReceptionForm: React.FC<EnhancedVehicleReceptionForm
               />
             </div>
 
-            {/* Exit Time from Drilling */}
-            <div className="md:col-span-2">
-              <label htmlFor="exit_time_drilling" className="block text-sm font-medium text-gray-700 mb-1">
-                {t('form.exitTime')}
-              </label>
-              <input
-                type="time"
-                id="exit_time_drilling"
-                {...register('exit_time_drilling')}
-                className="block w-full md:w-1/2 rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
-              />
-            </div>
 
             {/* Notes */}
             <div className="md:col-span-2">
