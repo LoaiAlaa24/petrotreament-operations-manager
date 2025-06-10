@@ -16,6 +16,7 @@ def migrate_enhanced_reception():
     """Migrate database for enhanced vehicle reception system"""
     
     print("🔄 Starting Enhanced Vehicle Reception migration...")
+    print(f"📊 Database URL: {settings.database_url[:50]}...")
     
     try:
         # Create session

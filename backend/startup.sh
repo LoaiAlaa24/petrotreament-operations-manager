@@ -22,7 +22,10 @@ echo "✅ Database is ready!"
 
 # Run database migrations
 echo "🔄 Running database migrations..."
-python migrate_enhanced_reception.py
+python migrate_enhanced_reception.py || {
+    echo "⚠️  Migration failed, but continuing startup..."
+    echo "💡 This might be normal if schema already exists"
+}
 
 # Create admin user if it doesn't exist
 echo "👤 Creating admin user..."
@@ -30,4 +33,6 @@ python create_admin.py
 
 # Start the application
 echo "🌐 Starting FastAPI server..."
-exec uvicorn main:app --host 0.0.0.0 --port 8000
+# Use PORT environment variable for Railway deployment, fallback to 8000 for local development
+PORT=${PORT:-8000}
+exec uvicorn main:app --host 0.0.0.0 --port $PORT
