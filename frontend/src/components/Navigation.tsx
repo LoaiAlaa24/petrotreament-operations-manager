@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
 import { 
   ChartBarIcon, 
   DocumentArrowDownIcon,
   ArrowRightOnRectangleIcon,
-  PlusIcon 
+  PlusIcon,
+  Bars3Icon,
+  XMarkIcon
 } from '@heroicons/react/24/outline';
 import LanguageSwitcher from './LanguageSwitcher';
 
@@ -17,6 +19,7 @@ const Navigation: React.FC<NavigationProps> = ({ onLogout }) => {
   const { t, i18n } = useTranslation();
   const location = useLocation();
   const isRTL = i18n.language === 'ar';
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const navigation = [
     {
@@ -80,42 +83,85 @@ const Navigation: React.FC<NavigationProps> = ({ onLogout }) => {
 
           {/* Right side - Language switcher and logout */}
           <div className="flex items-center space-x-4">
-            <LanguageSwitcher />
-            
-            {onLogout && (
+            {/* Desktop menu items */}
+            <div className="hidden sm:flex sm:items-center sm:space-x-4">
+              <LanguageSwitcher />
+              
+              {onLogout && (
+                <button
+                  onClick={onLogout}
+                  className="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                >
+                  <ArrowRightOnRectangleIcon className={`h-5 w-5 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+                  {t('nav.logout')}
+                </button>
+              )}
+            </div>
+
+            {/* Mobile menu button */}
+            <div className="sm:hidden">
               <button
-                onClick={onLogout}
-                className="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500"
+                aria-expanded="false"
               >
-                <ArrowRightOnRectangleIcon className={`h-5 w-5 ${isRTL ? 'ml-2' : 'mr-2'}`} />
-                {t('nav.logout')}
+                <span className="sr-only">Open main menu</span>
+                {isMobileMenuOpen ? (
+                  <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
+                ) : (
+                  <Bars3Icon className="block h-6 w-6" aria-hidden="true" />
+                )}
               </button>
-            )}
+            </div>
           </div>
         </div>
       </div>
 
       {/* Mobile menu */}
-      <div className="sm:hidden">
-        <div className="pt-2 pb-3 space-y-1">
-          {navigation.map((item) => (
-            <Link
-              key={item.name}
-              to={item.href}
-              className={`${
-                item.current
-                  ? 'bg-primary-50 border-primary-500 text-primary-700'
-                  : 'border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700'
-              } block pl-3 pr-4 py-2 border-l-4 text-base font-medium`}
-            >
-              <div className="flex items-center">
-                <item.icon className={`h-5 w-5 ${isRTL ? 'ml-3' : 'mr-3'}`} />
-                {item.name}
+      {isMobileMenuOpen && (
+        <div className="sm:hidden">
+          <div className="pt-2 pb-3 space-y-1">
+            {navigation.map((item) => (
+              <Link
+                key={item.name}
+                to={item.href}
+                onClick={() => setIsMobileMenuOpen(false)}
+                className={`${
+                  item.current
+                    ? 'bg-primary-50 border-primary-500 text-primary-700'
+                    : 'border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700'
+                } block pl-3 pr-4 py-2 border-l-4 text-base font-medium`}
+              >
+                <div className="flex items-center">
+                  <item.icon className={`h-5 w-5 ${isRTL ? 'ml-3' : 'mr-3'}`} />
+                  {item.name}
+                </div>
+              </Link>
+            ))}
+          </div>
+          
+          {/* Mobile menu footer with language switcher and logout */}
+          <div className="pt-4 pb-3 border-t border-gray-200">
+            <div className="flex items-center justify-between px-4">
+              {/* Language switcher in mobile */}
+              <div className="flex-shrink-0">
+                <LanguageSwitcher />
               </div>
-            </Link>
-          ))}
+              
+              {/* Logout button in mobile */}
+              {onLogout && (
+                <button
+                  onClick={onLogout}
+                  className="flex items-center px-3 py-2 text-base font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-50 rounded-md"
+                >
+                  <ArrowRightOnRectangleIcon className={`h-5 w-5 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+                  {t('nav.logout')}
+                </button>
+              )}
+            </div>
+          </div>
         </div>
-      </div>
+      )}
     </nav>
   );
 };
