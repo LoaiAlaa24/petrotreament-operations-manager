@@ -62,6 +62,9 @@
     "quantityMin": "يجب أن يكون 0 أو أكثر",
     "arrivalTime": "وقت الوصول",
     "departureTime": "وقت المغادرة",
+    "timeValidation": "وقت المغادرة يجب أن يكون بعد وقت الوصول",
+    "cuttingBoxesAmount": "كمية صناديق القطع / البرميل",
+    "cuttingBoxesPlaceholder": "أدخل كمية صناديق القطع / البرميل (اختياري)",
     "notes": "ملاحظات",
     "notesPlaceholder": "ملاحظات أو تعليقات إضافية...",
     "cancel": "إلغاء",
@@ -77,6 +80,7 @@
     "vehicleType": "نوع المركبة",
     "vehicleTypeRequired": "نوع المركبة مطلوب",
     "selectVehicleType": "اختر نوع المركبة",
+    "selectVehicle": "اختر المركبة",
     "driverName": "اسم السائق",
     "driverNameRequired": "اسم السائق مطلوب",
     "carBrand": "ماركة السيارة",
@@ -239,5 +243,9 @@
     "Friday": "الجمعة",
     "Saturday": "السبت",
     "Sunday": "الأحد"
+  },
+  "time": {
+    "am": "ص",
+    "pm": "م"
   }
 }

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, Float, Text, Boolean, ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime, Float, Text, Boolean, ForeignKey, Date
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from database import Base
@@ -26,6 +26,7 @@ class VehicleReception(Base):
     
     # Optional fields
     notes = Column(Text, nullable=True)
+    cutting_boxes_amount = Column(Float, nullable=True)  # Amount of Cutting Boxes / Barrel (optional)
     
     # Reception tracking
     reception_number = Column(String(50), nullable=True, unique=True)  # Auto-generated reception number
@@ -69,6 +70,26 @@ class Vehicle(Base):
     
     # Relationship back to reception
     reception = relationship("VehicleReception", back_populates="vehicles")
+
+
+class PetrotreatmentVehicle(Base):
+    """Model for Petrotreatment company vehicles"""
+    __tablename__ = "petrotreatment_vehicles"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    vehicle_type = Column(String(50), nullable=False)  # قاطرة, مقطورة
+    brand = Column(String(100), nullable=True)
+    model = Column(String(50), nullable=True)
+    previous_plate_number = Column(String(100), nullable=True)
+    current_plate_number = Column(String(100), nullable=True)
+    engine_number = Column(String(100), nullable=True)
+    chassis_number = Column(String(100), nullable=True)
+    license_start = Column(Date, nullable=True)
+    license_end = Column(Date, nullable=True)
+    
+    # Metadata
+    created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
 
 
 class User(Base):

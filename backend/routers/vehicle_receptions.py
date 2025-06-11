@@ -17,7 +17,7 @@ async def get_vehicle_receptions(
     size: int = Query(10, ge=1, le=100),
     sort_by: str = Query("created_at", pattern="^(date|company_name|created_at|total_quantity)$"),
     sort_order: str = Query("desc", pattern="^(asc|desc)$"),
-    company_filter: Optional[str] = Query(None),
+    company_filter: Optional[List[str]] = Query(None),
     water_type_filter: Optional[str] = Query(None),
     date_from: Optional[str] = Query(None),
     date_to: Optional[str] = Query(None),
@@ -29,8 +29,12 @@ async def get_vehicle_receptions(
     query = db.query(models.VehicleReception).filter(models.VehicleReception.is_active == True)
     
     # Apply filters
-    if company_filter:
-        query = query.filter(models.VehicleReception.company_name.ilike(f"%{company_filter}%"))
+    if company_filter and len(company_filter) > 0:
+        # Handle multiple company filters with OR condition
+        company_conditions = []
+        for company in company_filter:
+            company_conditions.append(models.VehicleReception.company_name.ilike(f"%{company}%"))
+        query = query.filter(or_(*company_conditions))
     
     if water_type_filter:
         query = query.filter(models.VehicleReception.water_type.ilike(f"%{water_type_filter}%"))
@@ -304,3 +308,53 @@ async def get_reception_stats(
         "companies": companies,
         "water_types": water_types
     }
+
+
+@router.get("/vehicles/options", response_model=List[schemas.VehicleOption])
+async def get_vehicle_options(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(require_admin_or_above)
+):
+    """Get vehicle options for dropdown including Petrotreatment vehicles and custom option"""
+    
+    # Get all Petrotreatment vehicles
+    petrotreatment_vehicles = db.query(models.PetrotreatmentVehicle).all()
+    
+    vehicle_options = []
+    
+    # Add Petrotreatment vehicles
+    for vehicle in petrotreatment_vehicles:
+        display_name = f"{vehicle.vehicle_type} - {vehicle.brand or 'غير محدد'}"
+        if vehicle.current_plate_number:
+            display_name += f" ({vehicle.current_plate_number})"
+        
+        vehicle_options.append(schemas.VehicleOption(
+            id=vehicle.id,
+            display_name=display_name,
+            vehicle_type=vehicle.vehicle_type,
+            brand=vehicle.brand,
+            current_plate_number=vehicle.current_plate_number,
+            is_custom=False
+        ))
+    
+    # Add custom vehicle option
+    vehicle_options.append(schemas.VehicleOption(
+        id=None,
+        display_name="مركبة أخرى (غير مسجلة) / Other Vehicle (Not Registered)",
+        vehicle_type="أخرى",
+        brand=None,
+        current_plate_number=None,
+        is_custom=True
+    ))
+    
+    return vehicle_options
+
+
+@router.get("/vehicles/petrotreatment", response_model=List[schemas.PetrotreatmentVehicle])
+async def get_petrotreatment_vehicles(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(require_admin_or_above)
+):
+    """Get all Petrotreatment vehicles"""
+    vehicles = db.query(models.PetrotreatmentVehicle).all()
+    return vehicles

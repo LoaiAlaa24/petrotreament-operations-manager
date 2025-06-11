@@ -8,6 +8,8 @@ import {
   User,
   LoginCredentials,
   RegisterData,
+  VehicleOption,
+  PetrotreatmentVehicle,
   AuthToken,
   ReportRequest,
   ReportSummary,
@@ -236,6 +238,17 @@ class ApiService {
 
   async getCompanyRates(): Promise<any> {
     const response = await this.api.get('/reports/company-rates');
+    return response.data;
+  }
+
+  // Vehicle options endpoints
+  async getVehicleOptions(): Promise<VehicleOption[]> {
+    const response: AxiosResponse<VehicleOption[]> = await this.api.get('/vehicle-receptions/vehicles/options');
+    return response.data;
+  }
+
+  async getPetrotreatmentVehicles(): Promise<PetrotreatmentVehicle[]> {
+    const response: AxiosResponse<PetrotreatmentVehicle[]> = await this.api.get('/vehicle-receptions/vehicles/petrotreatment');
     return response.data;
   }
 

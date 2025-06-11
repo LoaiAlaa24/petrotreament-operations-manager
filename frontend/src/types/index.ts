@@ -45,6 +45,7 @@ export interface VehicleReception {
   notes?: string;
   reception_number?: string;
   invoice_number?: string;
+  cutting_boxes_amount?: number;
   created_at: string;
   updated_at: string;
   is_active: boolean;
@@ -62,6 +63,7 @@ export interface VehicleReceptionCreate {
   departure_time?: string;
   notes?: string;
   invoice_number?: string;
+  cutting_boxes_amount?: number;
 }
 
 export interface EnhancedVehicleReceptionCreate {
@@ -73,6 +75,7 @@ export interface EnhancedVehicleReceptionCreate {
   departure_time?: string;
   notes?: string;
   invoice_number?: string;
+  cutting_boxes_amount?: number;
   vehicles: VehicleCreate[];
 }
 
@@ -86,6 +89,7 @@ export interface VehicleReceptionUpdate {
   departure_time?: string;
   notes?: string;
   invoice_number?: string;
+  cutting_boxes_amount?: number;
 }
 
 export interface VehicleReceptionList {
@@ -200,4 +204,29 @@ export interface FinancialReportSummary {
   total_volume_m3: number;
   total_cost: number;
   generated_at: string;
+}
+
+// Petrotreatment Vehicles types
+export interface PetrotreatmentVehicle {
+  id: number;
+  vehicle_type: string;
+  brand?: string;
+  model?: string;
+  previous_plate_number?: string;
+  current_plate_number?: string;
+  engine_number?: string;
+  chassis_number?: string;
+  license_start?: string;
+  license_end?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface VehicleOption {
+  id?: number; // null for custom vehicles
+  display_name: string;
+  vehicle_type: string;
+  brand?: string;
+  current_plate_number?: string;
+  is_custom: boolean;
 }

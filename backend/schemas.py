@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 from typing import Optional, List
 from pydantic import BaseModel, Field, validator
 
@@ -52,6 +52,7 @@ class VehicleReceptionBase(BaseModel):
     departure_time: Optional[datetime] = None
     notes: Optional[str] = None
     invoice_number: Optional[str] = Field(None, max_length=100)
+    cutting_boxes_amount: Optional[float] = Field(None, ge=0)
 
 
 class EnhancedVehicleReceptionCreate(VehicleReceptionBase):
@@ -75,6 +76,7 @@ class VehicleReceptionUpdate(BaseModel):
     departure_time: Optional[datetime] = None
     notes: Optional[str] = None
     invoice_number: Optional[str] = None
+    cutting_boxes_amount: Optional[float] = None
 
 
 class VehicleReception(VehicleReceptionBase):
@@ -83,7 +85,7 @@ class VehicleReception(VehicleReceptionBase):
     number_of_vehicles: int  # Calculated from vehicles
     day_of_week: str  # This will be auto-generated from date
     reception_number: Optional[str] = None
-    invoice_number: Optional[str] = None
+    cutting_boxes_amount: Optional[float] = None
     created_at: datetime
     updated_at: datetime
     is_active: bool
@@ -190,3 +192,37 @@ class CompanyRatesResponse(BaseModel):
     """Schema for company rates response"""
     rates: dict[str, float]
     default_rate: float
+
+
+# Petrotreatment Vehicles schemas
+class PetrotreatmentVehicleBase(BaseModel):
+    """Base schema for Petrotreatment vehicle"""
+    vehicle_type: str = Field(..., max_length=50)
+    brand: Optional[str] = Field(None, max_length=100)
+    model: Optional[str] = Field(None, max_length=50)
+    previous_plate_number: Optional[str] = Field(None, max_length=100)
+    current_plate_number: Optional[str] = Field(None, max_length=100)
+    engine_number: Optional[str] = Field(None, max_length=100)
+    chassis_number: Optional[str] = Field(None, max_length=100)
+    license_start: Optional[date] = None
+    license_end: Optional[date] = None
+
+
+class PetrotreatmentVehicle(PetrotreatmentVehicleBase):
+    """Schema for Petrotreatment vehicle response"""
+    id: int
+    created_at: datetime
+    updated_at: datetime
+    
+    class Config:
+        from_attributes = True
+
+
+class VehicleOption(BaseModel):
+    """Schema for vehicle dropdown option"""
+    id: Optional[int] = None  # None for custom vehicles
+    display_name: str
+    vehicle_type: str
+    brand: Optional[str] = None
+    current_plate_number: Optional[str] = None
+    is_custom: bool = False
