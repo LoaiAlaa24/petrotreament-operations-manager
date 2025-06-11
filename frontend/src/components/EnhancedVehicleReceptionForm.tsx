@@ -779,7 +779,7 @@ export const EnhancedVehicleReceptionForm: React.FC<EnhancedVehicleReceptionForm
                         required: t('form.carBrandRequired'),
                       })}
                       className="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
-                      placeholder="Enter car brand"
+                      placeholder={t('form.carBrandPlaceholder')}
                     />
                     {errors.vehicles?.[index]?.car_brand && (
                       <p className="mt-1 text-sm text-red-600">

@@ -85,6 +85,7 @@
     "driverNameRequired": "اسم السائق مطلوب",
     "carBrand": "ماركة السيارة",
     "carBrandRequired": "ماركة السيارة مطلوبة",
+    "carBrandPlaceholder": "أدخل ماركة السيارة",
     "vehicleQuantity": "كمية المركبة (م³)",
     "vehicleQuantityRequired": "كمية المركبة مطلوبة",
     "addVehicle": "إضافة مركبة أخرى",

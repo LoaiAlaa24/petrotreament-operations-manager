@@ -85,6 +85,7 @@
     "driverNameRequired": "Driver name is required",
     "carBrand": "Car Brand",
     "carBrandRequired": "Car brand is required",
+    "carBrandPlaceholder": "Enter car brand",
     "vehicleQuantity": "Vehicle Quantity (m³)",
     "vehicleQuantityRequired": "Vehicle quantity is required",
     "addVehicle": "Add Another Vehicle",
