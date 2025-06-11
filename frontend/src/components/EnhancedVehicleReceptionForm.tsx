@@ -240,8 +240,10 @@ export const EnhancedVehicleReceptionForm: React.FC<EnhancedVehicleReceptionForm
 
     // Update vehicle orders and calculate total quantity
     const updatedVehicles = data.vehicles.map((vehicle, index) => ({
-      ...vehicle,
       vehicle_number: `${vehicle.tractor_number}-${vehicle.trailer_number}`,
+      vehicle_type: vehicle.vehicle_type,
+      driver_name: vehicle.driver_name,
+      car_brand: vehicle.car_brand,
       vehicle_order: index + 1,
       vehicle_quantity: parseFloat(vehicle.vehicle_quantity?.toString() || '0'),
     }));
