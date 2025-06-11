@@ -36,7 +36,7 @@ interface FormData {
   arrival_time?: string;
   departure_time?: string;
   notes?: string;
-  cutting_boxes_amount?: number;
+  cutting_boxes_amount?: number | string; // Can be string from form input
   vehicles: VehicleFormData[];
 }
 
@@ -257,9 +257,20 @@ export const EnhancedVehicleReceptionForm: React.FC<EnhancedVehicleReceptionForm
       total_quantity: totalQuantity,
       arrival_time: data.arrival_time ? formatDateTime(data.date, data.arrival_time) : undefined,
       departure_time: data.departure_time ? formatDateTime(data.date, data.departure_time) : undefined,
-      notes: data.notes || undefined,
-      invoice_number: data.invoice_number || undefined,
-      cutting_boxes_amount: data.cutting_boxes_amount || undefined,
+      notes: data.notes && data.notes.trim() !== '' ? data.notes : undefined,
+      invoice_number: data.invoice_number && data.invoice_number.trim() !== '' ? data.invoice_number : undefined,
+      cutting_boxes_amount: (() => {
+        const value = data.cutting_boxes_amount;
+        if (value === undefined || value === null) {
+          return undefined;
+        }
+        if (typeof value === 'string') {
+          if (value.trim() === '') return undefined;
+          const numValue = parseFloat(value);
+          return isNaN(numValue) ? undefined : numValue;
+        }
+        return typeof value === 'number' && !isNaN(value) ? value : undefined;
+      })(),
       vehicles: updatedVehicles,
     };
 
