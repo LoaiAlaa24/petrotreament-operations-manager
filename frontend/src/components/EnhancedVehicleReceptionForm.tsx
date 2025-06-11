@@ -251,13 +251,15 @@ export const EnhancedVehicleReceptionForm: React.FC<EnhancedVehicleReceptionForm
     const totalQuantity = updatedVehicles.reduce((sum, v) => sum + v.vehicle_quantity, 0);
 
     const formattedData: EnhancedVehicleReceptionCreate = {
-      ...data,
+      date: formatDateTime(data.date, '00:00') || `${data.date}T00:00:00`,
       company_name: companyName,
       water_type: waterType,
-      date: formatDateTime(data.date, '00:00') || `${data.date}T00:00:00`,
       total_quantity: totalQuantity,
       arrival_time: data.arrival_time ? formatDateTime(data.date, data.arrival_time) : undefined,
       departure_time: data.departure_time ? formatDateTime(data.date, data.departure_time) : undefined,
+      notes: data.notes || undefined,
+      invoice_number: data.invoice_number || undefined,
+      cutting_boxes_amount: data.cutting_boxes_amount || undefined,
       vehicles: updatedVehicles,
     };
 
