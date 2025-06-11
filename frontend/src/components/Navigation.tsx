@@ -20,16 +20,16 @@ const Navigation: React.FC<NavigationProps> = ({ onLogout }) => {
 
   const navigation = [
     {
-      name: t('nav.dashboard'),
+      name: t('nav.addReception'),
       href: '/',
-      icon: ChartBarIcon,
-      current: location.pathname === '/'
+      icon: PlusIcon,
+      current: location.pathname === '/' || location.pathname === '/enhanced-reception'
     },
     {
-      name: t('nav.addReception'),
-      href: '/enhanced-reception',
-      icon: PlusIcon,
-      current: location.pathname === '/enhanced-reception'
+      name: t('nav.dashboard'),
+      href: '/dashboard',
+      icon: ChartBarIcon,
+      current: location.pathname === '/dashboard'
     },
     {
       name: t('nav.reports'),

@@ -100,6 +100,14 @@ function App() {
                   path="/"
                   element={
                     <ProtectedRoute>
+                      <EnhancedReceptionPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/dashboard"
+                  element={
+                    <ProtectedRoute>
                       <Dashboard />
                     </ProtectedRoute>
                   }
