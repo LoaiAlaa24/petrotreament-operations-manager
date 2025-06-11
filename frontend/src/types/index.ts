@@ -166,7 +166,7 @@ export interface ApiError {
 }
 
 export interface FilterOptions {
-  company_filter?: string;
+  company_filter?: string | string[]; // Support both single and multiple company filters
   water_type_filter?: string;
   date_from?: string;
   date_to?: string;

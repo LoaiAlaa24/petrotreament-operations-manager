@@ -1,8 +1,8 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { VehicleReception, FilterOptions } from '../types';
 import { format, parseISO } from 'date-fns';
-import { PencilIcon, TrashIcon, EyeIcon } from '@heroicons/react/24/outline';
+import { PencilIcon, TrashIcon, EyeIcon, ChevronDownIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '../hooks/useAuth';
 
 interface VehicleReceptionTableProps {
@@ -42,6 +42,51 @@ export const VehicleReceptionTable: React.FC<VehicleReceptionTableProps> = ({
   const { user } = useAuth();
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
   const [showDeleteModal, setShowDeleteModal] = useState<number | null>(null);
+  const [isCompanyDropdownOpen, setIsCompanyDropdownOpen] = useState(false);
+  const companyDropdownRef = useRef<HTMLDivElement>(null);
+
+  // Helper functions for multi-select company filter
+  const selectedCompanies = useMemo(() => {
+    const filter = filters.company_filter;
+    if (!filter) return [];
+    if (Array.isArray(filter)) return filter;
+    return [filter];
+  }, [filters.company_filter]);
+
+  const handleCompanyToggle = (company: string) => {
+    const currentSelected = selectedCompanies;
+    const isSelected = currentSelected.includes(company);
+    
+    let newSelected: string[];
+    if (isSelected) {
+      newSelected = currentSelected.filter(c => c !== company);
+    } else {
+      newSelected = [...currentSelected, company];
+    }
+    
+    onFilterChange({ 
+      ...filters, 
+      company_filter: newSelected.length === 0 ? undefined : newSelected 
+    });
+  };
+
+  const handleClearCompanies = () => {
+    onFilterChange({ ...filters, company_filter: undefined });
+  };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (companyDropdownRef.current && !companyDropdownRef.current.contains(event.target as Node)) {
+        setIsCompanyDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   // Check if user can edit/delete a specific reception
   const canEditOrDelete = (reception: VehicleReception): boolean => {
@@ -189,21 +234,66 @@ export const VehicleReceptionTable: React.FC<VehicleReceptionTableProps> = ({
       {/* Filters */}
       <div className="p-4 border-b border-gray-200 bg-gray-50">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div>
+          <div className="relative" ref={companyDropdownRef}>
             <label htmlFor="company-filter" className="block text-sm font-medium text-gray-700 mb-1">
               {t('table.filterCompany')}
             </label>
-            <select
-              id="company-filter"
-              value={filters.company_filter || ''}
-              onChange={(e) => onFilterChange({ ...filters, company_filter: e.target.value })}
-              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
-            >
-              <option value="">{t('table.allCompanies')}</option>
-              {(t('companies', { returnObjects: true }) as string[]).map((company: string, index: number) => (
-                <option key={index} value={company}>{company}</option>
-              ))}
-            </select>
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setIsCompanyDropdownOpen(!isCompanyDropdownOpen)}
+                className="relative w-full bg-white border border-gray-300 rounded-md pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+              >
+                <span className="block truncate">
+                  {selectedCompanies.length === 0 
+                    ? t('table.allCompanies')
+                    : selectedCompanies.length === 1 
+                    ? selectedCompanies[0]
+                    : `${selectedCompanies.length} شركات محددة / companies selected`
+                  }
+                </span>
+                <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                  <ChevronDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                </span>
+              </button>
+              
+              {isCompanyDropdownOpen && (
+                <div className="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
+                  {selectedCompanies.length > 0 && (
+                    <button
+                      onClick={handleClearCompanies}
+                      className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center"
+                    >
+                      <XMarkIcon className="h-4 w-4 mr-2" />
+                      {i18n.language === 'ar' ? 'مسح الكل' : 'Clear All'}
+                    </button>
+                  )}
+                  {(t('companies', { returnObjects: true }) as string[]).map((company: string, index: number) => {
+                    const isSelected = selectedCompanies.includes(company);
+                    return (
+                      <div
+                        key={index}
+                        onClick={() => handleCompanyToggle(company)}
+                        className={`cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-gray-100 ${
+                          isSelected ? 'bg-primary-50 text-primary-900' : 'text-gray-900'
+                        }`}
+                      >
+                        <span className={`block truncate ${isSelected ? 'font-medium' : 'font-normal'}`}>
+                          {company}
+                        </span>
+                        {isSelected && (
+                          <span className="absolute inset-y-0 right-0 flex items-center pr-4 text-primary-600">
+                            <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                            </svg>
+                          </span>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           </div>
           <div>
             <label htmlFor="water-type-filter" className="block text-sm font-medium text-gray-700 mb-1">

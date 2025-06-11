@@ -72,8 +72,16 @@ class ApiService {
     };
     
     // Only add filter parameters if they have valid values
-    if (filters.company_filter && filters.company_filter.trim() !== '') {
-      params.company_filter = filters.company_filter;
+    if (filters.company_filter) {
+      if (Array.isArray(filters.company_filter)) {
+        // Multiple companies - send as array if there are items
+        if (filters.company_filter.length > 0) {
+          params.company_filter = filters.company_filter;
+        }
+      } else if (filters.company_filter.trim() !== '') {
+        // Single company - maintain backward compatibility
+        params.company_filter = [filters.company_filter];
+      }
     }
     if (filters.water_type_filter && filters.water_type_filter.trim() !== '') {
       params.water_type_filter = filters.water_type_filter;
